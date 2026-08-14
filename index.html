@@ -3,11 +3,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PERA - Budgeting for the Kinsenas-Katapusan</title>
+<title>BADYET - Budgeting for the Kinsenas-Katapusan</title>
 
 <!-- SEO & PWA Meta Tags -->
 <meta name="theme-color" content="#f4f6f8" id="meta-theme-color">
-<meta property="og:title" content="PERA - Personal Expense & Revenue Assistant">
+<meta property="og:title" content="BADYET - Budget Allocation for Daily Yields & Expense Tracking">
 <meta property="og:description" content="Offline-first budgeting app designed specifically for the Filipino kinsenas-katapusan cycle.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💸</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💸</text></svg>">
@@ -100,7 +100,6 @@ body.dark .blob-3 { background: #065f46; opacity: 0.22; }
 button:focus-visible, input:focus-visible, select:focus-visible, .drawer-link:focus-visible, [onclick]:focus-visible {
   outline: none; box-shadow: var(--focus-ring);
 }
-
 /* ── TACTILE PRESS FEEDBACK ── */
 button, .pg-btn, .p-arrow, .settings-btn, .recv-btn, .pay-btn, .scan-btn, .add-btn-plain, .btn-confirm, .btn-cancel, .drawer-link, .cc-act {
   -webkit-tap-highlight-color: transparent;
@@ -119,7 +118,7 @@ html { scroll-behavior: smooth; }
 
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Montserrat',sans-serif;color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased; overflow-x:hidden;}
-.app{max-width:500px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding-bottom:60px; position:relative; z-index:1;}
+.app{max-width:500px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding-bottom:20px; position:relative; z-index:1;}
 
 /* ── UTILITY & ANIMATIONS ── */
 .glass-panel { background: var(--card); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border: 1px solid var(--border-glow); box-shadow: var(--shadow); border-radius: var(--r); }
@@ -171,7 +170,6 @@ body.dark .drawer-link.active { background: var(--hero-grad); color: #fff; }
 .pg-btn.active { background: var(--ink); color: var(--bg-color); border-color: var(--ink); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 body.dark .pg-btn.active { background: #fff; color: #111; }
 .pg-btn.now:not(.active) { background: var(--ybg); color: var(--gold); border-color: var(--ybr); }
-
 /* ── HERO ── */
 .hero{margin:20px 24px 0;background: var(--hero-grad);backdrop-filter: blur(20px);-webkit-backdrop-filter: blur(20px);border-radius: 26px;padding:26px 24px;color:#fff;position:relative;overflow:hidden;box-shadow:0 20px 48px -12px rgba(4,12,24,0.45), inset 0 1px 0 rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); transition: background 0.5s var(--bezier), box-shadow 0.4s;}
 body.dark .hero{box-shadow:0 20px 52px -12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);}
@@ -239,7 +237,6 @@ body.dark .crd-body{background: rgba(0,0,0,0.1);}
 .income-php{font-size:14px;font-weight:700;color:var(--green)}
 .recv-btn{font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;border:1px solid var(--line2);background:var(--card);color:var(--ink3);cursor:pointer;transition:all .2s var(--bezier);white-space:nowrap; box-shadow:var(--shadow);}
 .recv-btn:hover,.row-item.recvd .recv-btn{border-color:var(--green);color:var(--green);background:var(--gbg); transform:translateY(-1px);}
-
 .fx-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bbg);border:1px solid var(--bbr);border-radius:var(--rs);font-size:12px;color:var(--blue); font-weight:600;}
 .fx-bar-rates{display:flex;gap:12px;font-size:11px;font-weight:700}
 .fx-rate{display:flex;gap:4px;align-items:center}
@@ -359,7 +356,6 @@ body.dark .modal{box-shadow: 0 -10px 40px rgba(0,0,0,0.5);}
 .field{margin-bottom:16px}
 .field-label{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
 .field-input,.field-select{width:100%;padding:12px 16px;border:1px solid var(--line2);border-radius:14px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);outline:none;transition:all .2s var(--bezier);-webkit-appearance:none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);}
-.field-textarea{resize:vertical;min-height:72px;line-height:1.5;font-family:'Montserrat',sans-serif;}
 .field-input:focus,.field-select:focus{border-color:var(--ink);background:var(--card); box-shadow: 0 0 0 3px rgba(15,23,42,0.1);}
 body.dark .field-input:focus, body.dark .field-select:focus{box-shadow: 0 0 0 3px rgba(255,255,255,0.1);}
 .field-row{display:flex;gap:12px}
@@ -374,7 +370,7 @@ body.dark .btn-confirm{color:#111}
 /* ── RESPONSIVE DESKTOP OVERRIDES ── */
 @media (min-width: 1024px) {
   body { overflow-y: scroll; }
-  .app { max-width: 800px; padding-bottom: 60px; } /* Centralized clean layout */
+  .app { max-width: 800px; padding-bottom: 20px; } /* Centralized clean layout */
   
   .hero { width:100%; margin:20px 0 0; border-radius: 32px; padding: 40px; }
   .hero-amount { font-size: 56px; margin-bottom: 28px; }
@@ -431,9 +427,9 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
 <div class="drawer-overlay" id="drawer-ov" onclick="toggleDrawer()"></div>
 <div class="nav-drawer" id="nav-drawer">
   <div class="drawer-logo" style="margin-bottom: 32px; line-height: 1;">
-    PERA
+    BADYET
     <div style="font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: var(--ink3); margin-top: 6px; text-transform: uppercase; font-family: 'Montserrat', sans-serif; -webkit-text-fill-color: var(--ink3);">
-      Personal Expense &<br>Revenue Assistant
+      Budget Allocation for<br>Daily Yields &<br>Expense Tracking
     </div>
   </div>
   <div style="display:flex; flex-direction:column; gap:8px; height: 100%;" id="drawer-links">
@@ -458,8 +454,11 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
     <div class="drawer-link" id="link-dashboard" onclick="goTab('dashboard'); toggleDrawer()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> Dashboard
     </div>
+    <div class="drawer-link" id="link-support" onclick="goTab('support'); toggleDrawer()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> Support the Maker
+    </div>
     <div class="drawer-link" id="link-about" onclick="goTab('about'); toggleDrawer()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> About & Privacy
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> About the App
     </div>
     
     <!-- INSTALL APP BUTTON -->
@@ -468,13 +467,12 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
     </div>
   </div>
 </div>
-
 <div class="app">
   <!-- TOPNAV -->
   <div class="topnav">
     <div style="display:flex; align-items:center; gap:12px;">
       <button class="settings-btn" onclick="toggleDrawer()" style="padding:8px 10px; font-size:18px; line-height:1; font-weight:800; border-radius:10px;">≡</button>
-      <div class="logo" title="Personal Expense & Revenue Assistant">PERA</div>
+      <div class="logo" title="Budget Allocation for Daily Yields & Expense Tracking">BADYET</div>
     </div>
     <div class="top-actions">
       <button class="settings-btn" onclick="togglePrivacy()" title="Privacy Mode" id="privacy-btn">👁️</button>
@@ -515,7 +513,6 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
       <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width: 100%;"></div></div>
     </div>
   </div>
-
   <!-- OVERVIEW TAB -->
   <div class="tab-pane active" id="pane-overview">
     <div class="ov-grid" id="ov-grid"></div>
@@ -597,16 +594,40 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
     </div>
     <div id="dash-content"></div>
   </div>
+  <!-- SUPPORT TAB -->
+  <div class="tab-pane" id="pane-support">
+    <div class="hero" style="background: linear-gradient(135deg, var(--blue) 0%, var(--purp) 100%); margin-top: 0; padding: 32px 24px; text-align: center;">
+      <div style="font-size: 48px; margin-bottom: 16px;">☕</div>
+      <div style="font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px;">Support the Maker</div>
+      <div style="font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.6;">Because coding this app took blood, sweat, and an unhealthy amount of iced coffee.</div>
+    </div>
+    
+    <div class="crd" style="margin-top: 20px; text-align: center;">
+      <div class="crd-body" style="padding: 24px;">
+        <p style="font-size: 14px; line-height: 1.6; color: var(--ink2); margin-bottom: 20px;">
+          <strong>BADYET is and always will be 100% FREE to use.</strong> No ads, no paywalls, no subscriptions. <br><br>
+          However, if this app helped you survive the <em>petsa de peligro</em>, manage your debts, or save up for that concert ticket, consider dropping a small tip! Your GCash donations help me pay for web hosting, domains, caffeine, and my fading sanity. 💸
+        </p>
+        
+        <div style="background: #fff; padding: 16px; border-radius: 20px; display: inline-block; box-shadow: 0 8px 32px rgba(0, 39, 255, 0.15); margin-bottom: 20px; border: 2px solid #005ce6;">
+          <img src="IMG_9586.JPG" alt="GCash QR Code" style="max-width: 100%; height: auto; border-radius: 12px; width: 240px;">
+        </div>
+        
+        <div style="font-size: 12px; color: var(--ink3); font-weight: 600;">
+          Scan with your GCash app to send some love! 💙
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ABOUT & PRIVACY TAB -->
   <div class="tab-pane" id="pane-about">
-    
     <!-- PWA Install Card -->
     <div class="crd" id="install-card" style="margin-bottom: 20px; background: var(--pbg); border-color: var(--purp);">
       <div class="crd-body" style="display:flex; align-items:center; justify-content:space-between; background: transparent; padding: 20px;">
         <div>
           <div style="font-weight:800; color:var(--purp); font-size:15px; margin-bottom:2px;">Get the App</div>
-          <div style="font-size:12px; color:var(--ink2); font-weight:500;">Install PERA to your home screen</div>
+          <div style="font-size:12px; color:var(--ink2); font-weight:500;">Install BADYET to your home screen</div>
         </div>
         <button class="btn-confirm" style="flex:none; padding:10px 20px;" onclick="installApp()">Install</button>
       </div>
@@ -614,34 +635,36 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
 
     <div style="background:var(--ybg); border:1px solid var(--ybr); padding:16px; border-radius:12px; color:var(--gold); font-weight:600; margin-bottom:20px; font-size:13px; line-height:1.5;">
       <span style="font-size:18px; display:block; margin-bottom:8px;">⚠️ Important Warning</span>
-      Your financial data is stored entirely in your device's browser (LocalStorage) to protect your privacy. <strong>If you clear your browser cookies or browsing history, all your PERA data will be permanently deleted.</strong> Please use the Backup feature in the Settings menu regularly!
+      Your financial data is stored entirely in your device's browser (LocalStorage) to protect your privacy. <strong>If you clear your browser cookies or browsing history, all your BADYET data will be permanently deleted.</strong> Please use the Backup feature in the Settings menu regularly!
     </div>
 
     <div class="crd" style="margin-bottom: 20px;">
       <div class="crd-head">
-        <div class="crd-left"><div class="crd-icon ic-p">👋</div><div><div class="crd-title">About PERA</div><div class="crd-sub">Why this exists</div></div></div>
+        <div class="crd-left"><div class="crd-icon ic-p">👋</div><div><div class="crd-title">About BADYET</div><div class="crd-sub">Why this exists</div></div></div>
       </div>
       <div class="crd-body" style="font-size: 13px; line-height: 1.6; color: var(--ink2);">
         <p style="margin-bottom: 12px;">Created by <strong>Mark Espinosa</strong>, a multidisciplinary artist and creator. (<a href="https://markespinosa.com" target="_blank" style="color: var(--purp); font-weight: 700; text-decoration: none;">markespinosa.com</a>)</p>
-        <p style="margin-bottom: 12px;">I designed <strong>PERA</strong> (Personal Expense & Revenue Assistant) specifically with the everyday Filipino worker in mind. Many of us live paycheck to paycheck, relying heavily on the traditional 15th and 30th (<em>kinsenas-katapusan</em>) payroll cycle to juggle bills, debts, and daily expenses.</p>
-        <p>Traditional budgeting apps are often built on monthly cycles that simply don't fit our reality. PERA bridges this gap, allowing you to align your budget perfectly with when you actually get paid, so you can achieve peace of mind, manage your debts effectively, and build a clearer financial future.</p>
-      </div>
-    </div>
-
-    <div class="crd">
-      <div class="crd-head">
-        <div class="crd-left"><div class="crd-icon ic-t">🔒</div><div><div class="crd-title">Privacy Statement</div><div class="crd-sub">Your data is yours</div></div></div>
-      </div>
-      <div class="crd-body" style="font-size: 13px; line-height: 1.6; color: var(--ink2);">
-        <p style="margin-bottom: 12px;"><strong>Your Privacy is Absolute.</strong></p>
-        <p style="margin-bottom: 12px;">PERA operates completely offline and serverless. When you input your income, expenses, bills, and savings, that data is stored <strong>entirely locally on your device's browser</strong>.</p>
-        <p style="margin-bottom: 12px;">We do not collect, send, read, or sell your financial data. No accounts, no cloud sync, and no tracking.</p>
-        <p>For your security and peace of mind, you can export your data as a CSV or create a backup file at any time using the Settings menu.</p>
+        <p style="margin-bottom: 12px;">I designed <strong>BADYET</strong> (Budget Allocation for Daily Yields & Expense Tracking) specifically with the everyday Filipino worker in mind. Many of us live paycheck to paycheck, relying heavily on the traditional 15th and 30th (<em>kinsenas-katapusan</em>) payroll cycle to juggle bills, debts, and daily expenses.</p>
+        <p>Traditional budgeting apps are often built on monthly cycles that simply don't fit our reality. BADYET bridges this gap, allowing you to align your budget perfectly with when you actually get paid, so you can achieve peace of mind, manage your debts effectively, and build a clearer financial future without the mental gymnastics.</p>
       </div>
     </div>
   </div>
-</div>
 
+  <!-- FOOTER: ABOUT & PRIVACY -->
+  <div style="padding: 40px 24px; text-align: center; color: var(--ink3); font-size: 12px; line-height: 1.6; border-top: 1px solid var(--line); margin-top: 40px;">
+    <div style="margin-bottom: 12px;">
+      <strong style="color:var(--ink)">BADYET</strong> (Budget Allocation for Daily Yields & Expense Tracking)<br>
+      Created with ☕ and lots of 😭 by <a href="https://markespinosa.com" target="_blank" style="color: var(--purp); font-weight: 700; text-decoration: none;">Mark Espinosa</a>.
+    </div>
+    <div style="margin-bottom: 12px;">
+      <b>Your data is yours.</b> BADYET operates completely offline and serverless. Your financial data is stored entirely locally on your device's browser. We do not collect, send, read, or sell your financial data.
+    </div>
+    <div style="font-size: 10px;">
+      For concerns and questions: <a href="mailto:hello@markespinosa.com" style="color: var(--purp); text-decoration: none;">hello@markespinosa.com</a><br>
+      Compliant with Data Privacy Laws in the Philippines.
+    </div>
+  </div>
+</div>
 <!-- FILE INPUTS -->
 <input type="file" id="receipt-file" accept="image/*,.heic,.heif,.heics,.jpg,.jpeg,.png,.gif,.webp,.bmp,.tiff,.tif" style="display:none" onchange="receiptChosen(event)">
 <input type="file" id="backup-file" accept=".json" style="display:none" onchange="handleRestore(event)">
@@ -655,7 +678,7 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
     <div style="font-size:48px; margin-bottom:16px;">📱</div>
     <div class="modal-title">Install App</div>
     <div style="font-size:13px; color:var(--ink2); line-height:1.6; margin-bottom:24px; text-align:left;">
-      For the best offline experience, add PERA to your home screen! It will look and feel exactly like a native app.<br><br>
+      For the best offline experience, add BADYET to your home screen! It will look and feel exactly like a native app.<br><br>
       <strong style="color:var(--ink)">iOS (Safari)</strong><br>
       Tap the <b>Share</b> icon at the bottom of the screen, scroll down, and tap <b>"Add to Home Screen"</b>.<br><br>
       <strong style="color:var(--ink)">Android (Chrome)</strong><br>
@@ -667,42 +690,28 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
   </div>
 </div>
 
-<!-- FIRST-TIME SURVEY MODAL -->
-<div class="overlay" id="survey-ov">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div style="font-size:40px; margin-bottom:12px; text-align:center;">💬</div>
-    <div class="modal-title" style="text-align:center; margin-bottom:8px;">Quick hello before you start</div>
-    <div style="font-size:13px; color:var(--ink2); line-height:1.6; margin-bottom:22px; text-align:center;">
-      PERA is a solo-built app and I'd love to know who's using it. Totally optional — takes 10 seconds.
-    </div>
-    <div class="field"><label class="field-label">Name</label><input class="field-input" id="survey-name" placeholder="Juan Dela Cruz"></div>
-    <div class="field"><label class="field-label">Email address</label><input class="field-input" id="survey-email" type="email" placeholder="juan@email.com"></div>
-    <div class="field" style="margin-bottom:0;"><label class="field-label">Comments or suggestions <span style="text-transform:none;font-weight:600;color:var(--ink3)">(optional)</span></label><textarea class="field-input field-textarea" id="survey-comments" rows="3" placeholder="Anything you'd like to see, or just say hi!"></textarea></div>
-    <div id="survey-error" style="font-size:11px;color:var(--red);font-weight:700;margin-top:8px;display:none;">Please enter your name and a valid email.</div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="skipSurvey()">Maybe later</button>
-      <button class="btn-confirm" onclick="submitSurvey()">Send</button>
-    </div>
-    <div style="font-size:10px;color:var(--ink3);text-align:center;margin-top:14px;line-height:1.5;">Your data stays on this device, same as everything else in PERA. This just helps me reach out if needed.</div>
-  </div>
-</div>
-
 <!-- WELCOME ONBOARDING MODAL -->
 <div class="overlay" id="welcome-ov" onclick="closeIf(event,'welcome-ov')">
   <div class="modal" style="text-align:center">
     <div style="font-size:48px; margin-bottom:16px;">Mabuhay! 👋</div>
-    <div class="modal-title">Welcome to PERA</div>
+    <div class="modal-title">Welcome to BADYET</div>
     <div style="font-size:13px; color:var(--ink2); line-height:1.6; margin-bottom:24px;">
-      PERA (Personal Expense & Revenue Assistant) is a budget tracker designed specifically for the Filipino <b>kinsenas-katapusan</b> cycle.<br><br>
-      Everything runs completely offline directly on your device. To begin, let's set up your primary source of income!
+      BADYET (Budget Allocation for Daily Yields & Expense Tracking) is your new best friend for surviving the <b>kinsenas-katapusan</b> cycle.<br><br>
+      Before we start counting your hard-earned pesos, let's get acquainted!
     </div>
+    
+    <div class="field" style="text-align:left"><label class="field-label">Your Name</label><input class="field-input" id="ob-name" placeholder="e.g. Juan"></div>
+    <div class="field" style="text-align:left"><label class="field-label">Your Email</label><input class="field-input" id="ob-email" type="email" placeholder="juan@delacruz.com"></div>
+    
+    <div style="font-size:10px; color:var(--ink3); line-height:1.4; margin-bottom:24px; text-align:left; background:var(--bg); padding:10px; border-radius:8px;">
+      <b>Privacy Notice:</b> What you input will be added to a Google Sheet. This will only be used for updates and personal marketing purposes, and will <b>never</b> be used or sold to others. We are fully compliant with Data Privacy Laws in the Philippines. For concerns and questions, email <a href="mailto:hello@markespinosa.com" style="color:var(--purp)">hello@markespinosa.com</a>.
+    </div>
+    
     <div class="modal-actions">
-      <button class="btn-confirm" style="width:100%" onclick="closeOverlay('welcome-ov'); goTab('income'); openIncomeModal();">Set up my Income</button>
+      <button class="btn-confirm" style="width:100%" onclick="submitOnboarding()">Let's get this bread!</button>
     </div>
   </div>
 </div>
-
 
 <!-- PERIOD SELECTOR MODAL -->
 <div class="overlay" id="period-ov" onclick="closeIf(event,'period-ov')">
@@ -715,7 +724,6 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
     </div>
   </div>
 </div>
-
 <!-- SETTINGS MODAL -->
 <div class="overlay" id="settings-ov" onclick="closeIf(event,'settings-ov')">
   <div class="modal">
@@ -786,7 +794,6 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
     </div>
   </div>
 </div>
-
 <!-- SEARCH MODAL -->
 <div class="overlay" id="search-ov" onclick="closeIf(event,'search-ov')">
   <div class="modal" style="display:flex;flex-direction:column">
@@ -844,7 +851,6 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
     </div>
   </div>
 </div>
-
 <!-- ADD DEBT/BILL MODAL -->
 <div class="overlay" id="debt-ov" onclick="closeIf(event,'debt-ov')">
   <div class="modal">
@@ -970,7 +976,6 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
     </div>
   </div>
 </div>
-
 <!-- EDIT INCOME MODAL -->
 <div class="overlay" id="inc-ov" onclick="closeIf(event,'inc-ov')">
   <div class="modal">
@@ -1071,10 +1076,9 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
     </div>
   </div>
 </div>
-
 <script>
 // ── GLOBALS & HELPERS ─────────────────────────────────────────────
-const STORE = 'pera_v26_glass'; 
+const STORE = 'badyet_v26_glass'; 
 
 let S = {};
 let fxLastUpdated = null;
@@ -1208,7 +1212,6 @@ function openPeriodModal() {
   ).join('');
   openOverlay('period-ov');
 }
-
 // ── PWA INSTALL LOGIC ─────────────────────────────────────────────
 let deferredPrompt;
 
@@ -1306,7 +1309,6 @@ const getSchedLabel = sched => {
   const p = getPDef(sched);
   return p ? 'One-time ('+p.label+')' : '';
 };
-
 // ── CURRENCIES & FX ──────────────────────────────────────────────
 const CURRENCIES = ['PHP','USD','EUR','GBP','SGD','JPY','AUD','CAD','HKD','KRW'];
 let FX = { PHP:1, USD:59, EUR:64, GBP:75, SGD:44, JPY:0.40, AUD:38, CAD:43, HKD:7.6, KRW:0.043 };
@@ -1329,7 +1331,7 @@ async function fetchRates() {
       const d = await usdRes.value.json();
       if (d?.rates?.PHP) { FX.USD = d.rates.PHP; gotRate = true; }
     }
-    if (gotRate) { fxLastUpdated = new Date(); try { localStorage.setItem('pera_fx', JSON.stringify({ rates: FX, ts: fxLastUpdated.toISOString() })); } catch(e){} }
+    if (gotRate) { fxLastUpdated = new Date(); try { localStorage.setItem('badyet_fx', JSON.stringify({ rates: FX, ts: fxLastUpdated.toISOString() })); } catch(e){} }
   } catch(e) {}
   fxLoading = false;
   updateFXBadge(false);
@@ -1339,7 +1341,7 @@ async function fetchRates() {
 
 function loadCachedRates() {
   try {
-    const c = JSON.parse(localStorage.getItem('pera_fx')||'null');
+    const c = JSON.parse(localStorage.getItem('badyet_fx')||'null');
     if (c && c.rates && c.ts) {
       if (Date.now() - new Date(c.ts).getTime() < 30*60*1000) { FX = c.rates; fxLastUpdated = new Date(c.ts); return true; }
     }
@@ -1387,47 +1389,6 @@ const loadState = () => { try{ const s=localStorage.getItem(STORE); return s?JSO
 const save = () => { try{ localStorage.setItem(STORE,JSON.stringify(S)); }catch{} };
 
 S = loadState() || {};
-
-// First time user check
-let isFirstTime = false;
-if (Object.keys(S).length === 0) {
-  isFirstTime = true;
-}
-
-// ── FIRST-TIME SURVEY ─────────────────────────────────────────────
-const SURVEY_KEY = 'pera_survey_v1';
-function hasSeenSurvey() { try { return !!localStorage.getItem(SURVEY_KEY); } catch(e) { return true; } }
-function markSurveySeen(status) { try { localStorage.setItem(SURVEY_KEY, JSON.stringify({ status, ts: new Date().toISOString() })); } catch(e){} }
-
-function maybeShowSurvey() {
-  if (isFirstTime && !hasSeenSurvey()) { openOverlay('survey-ov'); return true; }
-  return false;
-}
-
-function skipSurvey() {
-  markSurveySeen('skipped');
-  closeOverlay('survey-ov');
-  if (isFirstTime) openOverlay('welcome-ov');
-}
-
-function submitSurvey() {
-  const name = document.getElementById('survey-name').value.trim();
-  const email = document.getElementById('survey-email').value.trim();
-  const comments = document.getElementById('survey-comments').value.trim();
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const errEl = document.getElementById('survey-error');
-
-  if (!name || !emailOk) { errEl.style.display = 'block'; return; }
-  errEl.style.display = 'none';
-
-  try {
-    localStorage.setItem('pera_survey_response', JSON.stringify({ name, email, comments, ts: new Date().toISOString() }));
-  } catch(e) {}
-
-  markSurveySeen('submitted');
-  closeOverlay('survey-ov');
-  if (isFirstTime) openOverlay('welcome-ov');
-}
 
 if (!S.bills) S.bills = {};
 if (!S.expenses) S.expenses = {};
@@ -1479,6 +1440,37 @@ PERIOD_DEFS.forEach(p => {
 
 if (!PERIOD_DEFS.find(p => p.id === S.activeId)) S.activeId = PERIOD_DEFS.find(p => p.isCurrent)?.id || PERIOD_DEFS[0].id;
 
+// ── ONBOARDING LOGIC ──────────────────────────────────────────────
+function submitOnboarding() {
+  const name = document.getElementById('ob-name').value.trim();
+  const email = document.getElementById('ob-email').value.trim();
+  
+  if (!name || !email) {
+    alert("Please drop your name and email so we can properly welcome you! (Don't worry, we don't spam 🙅‍♂️)");
+    return;
+  }
+  
+  S.userName = name;
+  S.userEmail = email;
+  save();
+  
+  // Submit to Google Sheets via Apps Script
+  // NOTE: You must replace 'YOUR-APPS-SCRIPT-ID-HERE' with your actual deployed macro URL.
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbz-YOUR-APPS-SCRIPT-ID-HERE/exec';
+  const formData = new FormData();
+  formData.append('Name', name);
+  formData.append('Email', email);
+  formData.append('Timestamp', new Date().toISOString());
+  
+  fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
+    .then(() => console.log('Welcome details saved securely.'))
+    .catch(err => console.error('Error saving details:', err));
+  
+  closeOverlay('welcome-ov'); 
+  goTab('income'); 
+  openIncomeModal();
+  renderAll(); // Updates greeting
+}
 
 // ── SETTINGS: PRIVACY, THEME, CSV & BACKUP ───────────────────────
 function applyPrivacy() {
@@ -1522,11 +1514,11 @@ function exportCSV() {
     (S.expenses[p.id]||[]).forEach(e => csv += `"${p.label}","Expense","${getCat(e.cat).label}","${e.name}","${e.amount}","${e.currency||'PHP'}","${toPHP(e.amount, e.currency||'PHP')}"\n`);
   });
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `pera_export.csv`; a.click();
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `badyet_export.csv`; a.click();
 }
 function downloadBackup() {
   const blob = new Blob([localStorage.getItem(STORE)], {type: "application/json"});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `pera-backup.json`; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `badyet-backup.json`; a.click();
 }
 function handleRestore(e) {
   const file = e.target.files[0]; if(!file) return;
@@ -1538,7 +1530,7 @@ function handleRestore(e) {
 }
 
 function hardReset() {
-  if(confirm("⚠️ ARE YOU ABSOLUTELY SURE?\n\nThis will permanently delete ALL your PERA data, settings, bills, and income records. There is no undo!")) {
+  if(confirm("⚠️ ARE YOU ABSOLUTELY SURE?\n\nThis will permanently delete ALL your BADYET data, settings, bills, and income records. There is no undo!")) {
     localStorage.removeItem(STORE);
     location.reload();
   }
@@ -1598,7 +1590,7 @@ function doSearch(q) {
       </div>
       <div class="row-amt num">${fAmt(r.amt, r.cur)}</div>
     </div>
-  `).join('') || `<div class="empty-state"><div class="empty-icon">👻</div><div class="empty-title">No results</div><div class="empty-desc">Couldn't find anything for that.</div></div>`;
+  `).join('') || `<div class="empty-state"><div class="empty-icon">👻</div><div class="empty-title">No results</div><div class="empty-desc">Couldn't find anything. Did you imagine buying that? 🤔</div></div>`;
 }
 
 // ── INCOME EDITING ─────────────────────────────────────────────────
@@ -1606,7 +1598,6 @@ function openIncomeModal() {
   renderIncomeEdit();
   openOverlay('inc-ov');
 }
-
 function renderIncomeEdit() {
   const list = document.getElementById('ie-list');
   list.innerHTML = S.income.map((src, i) => `
@@ -1768,7 +1759,6 @@ function getTrendData(startIdx, count, getter) {
   }
   return res;
 }
-
 // ── RENDER ENGINE ────────────────────────────────────────────────
 function renderAll() {
   try { computeRollovers(); } catch(e) { console.error('Rollover error', e); }
@@ -1787,8 +1777,17 @@ function renderAll() {
   const heroEl = document.getElementById('hero-card');
   if (heroEl) heroEl.classList.toggle('over-budget', isOver);
   
+  // Witty Greeting Configuration
   const h = new Date().getHours();
-  const greeting = h < 12 ? 'Good morning,' : h < 18 ? 'Good afternoon,' : 'Good evening,';
+  let greeting = '';
+  const name = S.userName ? ' ' + S.userName : '';
+  if (h < 12) {
+    greeting = `Rise and grind,${name}! Let's get this bread. 🍞`;
+  } else if (h < 18) {
+    greeting = `Afternoon,${name}! Surviving the petsa de peligro? 😅`;
+  } else {
+    greeting = `Evening,${name}! Time to review the daily damage. 🌙`;
+  }
   document.getElementById('hero-greeting').textContent = greeting;
   
   if (isOver) { document.getElementById('hero-amount').textContent = 'Over Budget'; }
@@ -1884,7 +1883,7 @@ function renderOverview(pid, pIdx, income, bills, exp, credit, avail, alloc) {
     ovHtml += `<div class="sec-label">Projected / Expected</div>` + proj.map((s,i) => { del++; return renderItemOV(s, false, del); }).join('');
   }
   if (srcs.length === 0 && (!S.enableRollover || !roll)) {
-    ovHtml += `<div class="empty-state stagger-item"><div class="empty-icon">🪹</div><div class="empty-title">No income</div><div class="empty-desc">No income streams set for this period.</div></div>`;
+    ovHtml += `<div class="empty-state stagger-item"><div class="empty-icon">🪹</div><div class="empty-title">No income</div><div class="empty-desc">No income configured. Living on prayers and tap water? 🙏</div></div>`;
   }
 
   document.getElementById('ov-income-preview').innerHTML=`
@@ -1905,7 +1904,6 @@ function renderOverview(pid, pIdx, income, bills, exp, credit, avail, alloc) {
       </div>`).join('')}
     </div></div>` : '';
 }
-
 function renderIncomeTab(pid) {
   const expectedInc = getIncomePHP(pid);
   const receivedInc = getReceivedIncomePHP(pid);
@@ -1953,7 +1951,7 @@ function renderIncomeTab(pid) {
 
   if (recvd.length > 0) { html += `<div class="sec-label">Actual / Received</div>` + recvd.map((s,i) => { del++; return renderItem(s, true, del); }).join(''); }
   if (proj.length > 0) { html += `<div class="sec-label" style="margin-top:16px">Projected / Expected</div>` + proj.map((s,i) => { del++; return renderItem(s, false, del); }).join(''); }
-  if (srcs.length === 0) { html += `<div class="empty-state stagger-item"><div class="empty-icon">🪹</div><div class="empty-title">No income</div><div class="empty-desc">No income configured for this period.</div></div>`; }
+  if (srcs.length === 0) { html += `<div class="empty-state stagger-item"><div class="empty-icon">🪹</div><div class="empty-title">No income</div><div class="empty-desc">No income configured. Are we living on prayers? 🙏</div></div>`; }
   html+=`<button class="add-btn-plain glass-panel stagger-item" style="margin-top:12px; animation-delay:${(del+1)*0.05}s" onclick="openIncomeModal()">Edit income sources</button>`;
   document.getElementById('income-body').innerHTML=html;
 }
@@ -2069,7 +2067,7 @@ function renderBillsTab(pid) {
   const billsSubEl = document.getElementById('bills-sub');
   if (billsSubEl) billsSubEl.textContent = unpaidCount > 0 ? `${unpaidCount} items unpaid` : 'All settled';
 
-  document.getElementById('bills-body').innerHTML = combinedHtml || `<div class="empty-state stagger-item"><div class="empty-icon">☕</div><div class="empty-title">All caught up!</div><div class="empty-desc">No bills due for this period.</div></div>`;
+  document.getElementById('bills-body').innerHTML = combinedHtml || `<div class="empty-state stagger-item"><div class="empty-icon">☕</div><div class="empty-title">All caught up!</div><div class="empty-desc">No bills due. Enjoy the temporary peace of mind! 🧘‍♂️</div></div>`;
 
   if(pdef && pdef.isProjected && combinedHtml) document.getElementById('bills-body').innerHTML += `<div style="font-size:11px;color:var(--ink3);text-align:center;margin-top:8px;">Projected — mark bills as paid when settled.</div>`;
 }
@@ -2199,7 +2197,7 @@ function renderExpensesTab(pid) {
         </div>
       </div>
     `;
-  }).join('') || `<div class="empty-state stagger-item"><div class="empty-icon">🪪</div><div class="empty-title">No expenses</div><div class="empty-desc">You haven't logged any expenses yet.</div></div>`;
+  }).join('') || `<div class="empty-state stagger-item"><div class="empty-icon">🪪</div><div class="empty-title">No expenses</div><div class="empty-desc">Nothing logged yet. Wow, you're actually saving money? 😱</div></div>`;
 }
 
 function renderSavingsTab(pid, avail, alloc) {
@@ -2220,7 +2218,6 @@ function renderSavingsTab(pid, avail, alloc) {
     `;
   }).join('') + `<button class="add-btn-plain glass-panel stagger-item" style="margin-top:8px; animation-delay:${(S.goals.length+1)*0.05}s" onclick="openOverlay('goal-ov')">+ Add Savings Goal</button>`;
 }
-
 // ── DASHBOARD SVG DONUT ──
 function createDonutChart(data) {
   let total = data.reduce((s, d) => s + d.val, 0);
@@ -2349,7 +2346,6 @@ function updAlloc(p, g, v) {
   }
   renderAll(); 
 }
-
 function openDebtModal() { 
   document.getElementById('d-start').innerHTML = PERIOD_DEFS.map(p => `<option value="${p.id}">${p.label}</option>`).join('');
   document.getElementById('d-cur').innerHTML = CURRENCIES.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -2461,7 +2457,6 @@ function saveCCInst(){
 
 function delInst(ci,ii){S.creditLines[ci].installments.splice(ii,1);save();renderAll();}
 function delCL(ci){if(confirm('Remove this credit line?')){S.creditLines.splice(ci,1);save();renderAll();}}
-
 // Partial Bills
 function openBillPay(pid, idx) {
   const b = S.bills[pid][idx];
@@ -2895,13 +2890,13 @@ function renderDashboard() {
   
   // Set active duration button visual state initially
   document.querySelectorAll('.dash-dur-row .pg-btn').forEach(btn => btn.classList.remove('active'));
-  document.getElementById('dur-1m').classList.add('active');
+  document.getElementById('dur-1m')?.classList.add('active');
   
   // Dynamic Manifest generation for PWA Installability 
   try {
     const manifestJSON = {
-      name: "PERA Finance",
-      short_name: "PERA",
+      name: "BADYET Finance",
+      short_name: "BADYET",
       display: "standalone",
       theme_color: "#0f172a",
       background_color: "#f4f6f8",
@@ -2927,9 +2922,9 @@ function renderDashboard() {
     hideInstallUI();
   }
 
-  // Open Welcome Modal if first time user (survey shows first, welcome follows once it's dismissed)
-  if (isFirstTime && !isStandalone) {
-    if (!maybeShowSurvey()) openOverlay('welcome-ov');
+  // Open Welcome Modal if first time user
+  if (!localStorage.getItem(STORE) && !isStandalone) {
+    openOverlay('welcome-ov');
   }
 })();
 </script>
