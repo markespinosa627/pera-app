@@ -610,7 +610,7 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
         </p>
         
         <div style="background: #fff; padding: 16px; border-radius: 20px; display: inline-block; box-shadow: 0 8px 32px rgba(0, 39, 255, 0.15); margin-bottom: 20px; border: 2px solid #005ce6;">
-          <img src="IMG_9586.JPG" alt="GCash QR Code" style="max-width: 100%; height: auto; border-radius: 12px; width: 240px;">
+          <img src="https://ibb.co/Sw9BdS4Q alt="GCash QR Code" style="max-width: 100%; height: auto; border-radius: 12px; width: 240px;">
         </div>
         
         <div style="font-size: 12px; color: var(--ink3); font-weight: 600;">
@@ -643,7 +643,7 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
         <div class="crd-left"><div class="crd-icon ic-p">👋</div><div><div class="crd-title">About BADYET</div><div class="crd-sub">Why this exists</div></div></div>
       </div>
       <div class="crd-body" style="font-size: 13px; line-height: 1.6; color: var(--ink2);">
-        <p style="margin-bottom: 12px;">Created by <strong>Mark Espinosa</strong>, a multidisciplinary artist and creator. (<a href="https://markespinosa.com" target="_blank" style="color: var(--purp); font-weight: 700; text-decoration: none;">markespinosa.com</a>)</p>
+        <p style="margin-bottom: 12px;">Created by <strong>Mark Espinosa</strong>, a multidisciplinary artist and creator. (<a href="https://www.markespinosa.com" target="_blank" style="color: var(--purp); font-weight: 700; text-decoration: none;">markespinosa.com</a>)</p>
         <p style="margin-bottom: 12px;">I designed <strong>BADYET</strong> (Budget Allocation for Daily Yields & Expense Tracking) specifically with the everyday Filipino worker in mind. Many of us live paycheck to paycheck, relying heavily on the traditional 15th and 30th (<em>kinsenas-katapusan</em>) payroll cycle to juggle bills, debts, and daily expenses.</p>
         <p>Traditional budgeting apps are often built on monthly cycles that simply don't fit our reality. BADYET bridges this gap, allowing you to align your budget perfectly with when you actually get paid, so you can achieve peace of mind, manage your debts effectively, and build a clearer financial future without the mental gymnastics.</p>
       </div>
@@ -1456,7 +1456,7 @@ function submitOnboarding() {
   
   // Submit to Google Sheets via Apps Script
   // NOTE: You must replace 'YOUR-APPS-SCRIPT-ID-HERE' with your actual deployed macro URL.
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbz-YOUR-APPS-SCRIPT-ID-HERE/exec';
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwe4DLMIs6kxSNkJbKddAs62A9RZCKFg6cPLYG8euJCNuuxiCIRUJYggRjMjwuTVHzh/exec';
   const formData = new FormData();
   formData.append('Name', name);
   formData.append('Email', email);
@@ -1782,11 +1782,11 @@ function renderAll() {
   let greeting = '';
   const name = S.userName ? ' ' + S.userName : '';
   if (h < 12) {
-    greeting = `Rise and grind,${name}! Let's get this bread. 🍞`;
+    greeting = `Hello${name}! Rise and grind, let's get this bread. 🍞`;
   } else if (h < 18) {
-    greeting = `Afternoon,${name}! Surviving the petsa de peligro? 😅`;
+    greeting = `Hello${name}! Surviving the petsa de peligro this afternoon? 😅`;
   } else {
-    greeting = `Evening,${name}! Time to review the daily damage. 🌙`;
+    greeting = `Hello${name}! Evening time, let's review the daily damage. 🌙`;
   }
   document.getElementById('hero-greeting').textContent = greeting;
   
