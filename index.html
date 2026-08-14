@@ -756,6 +756,9 @@ body.privacy-mode .ds-val, body.privacy-mode .bt-val, body.privacy-mode .pt-cell
     
     <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);margin-bottom:10px">Local Data</div>
     <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+      <button onclick="openOverlay('welcome-ov'); closeOverlay('settings-ov');" style="padding:14px;border-radius:var(--rs);border:1px solid var(--border-glow);background:var(--card);color:var(--ink);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.2s var(--bezier);">
+        👤 Update Profile Info
+      </button>
       <button onclick="exportCSV()" style="padding:14px;border-radius:var(--rs);border:1px solid var(--gbr);background:var(--gbg);color:var(--green);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.2s var(--bezier);">
         📄 Export Data to CSV
       </button>
@@ -1388,6 +1391,11 @@ function openFXPanel() {
 const loadState = () => { try{ const s=localStorage.getItem(STORE); return s?JSON.parse(s):null; }catch{return null;} };
 const save = () => { try{ localStorage.setItem(STORE,JSON.stringify(S)); }catch{} };
 
+let isFirstTime = false;
+if (!localStorage.getItem(STORE)) {
+  isFirstTime = true;
+}
+
 S = loadState() || {};
 
 if (!S.bills) S.bills = {};
@@ -1456,7 +1464,7 @@ function submitOnboarding() {
   
   // Submit to Google Sheets via Apps Script
   // NOTE: You must replace 'YOUR-APPS-SCRIPT-ID-HERE' with your actual deployed macro URL.
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbwe4DLMIs6kxSNkJbKddAs62A9RZCKFg6cPLYG8euJCNuuxiCIRUJYggRjMjwuTVHzh/exec';
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbz-YOUR-APPS-SCRIPT-ID-HERE/exec';
   const formData = new FormData();
   formData.append('Name', name);
   formData.append('Email', email);
@@ -2923,7 +2931,7 @@ function renderDashboard() {
   }
 
   // Open Welcome Modal if first time user
-  if (!localStorage.getItem(STORE) && !isStandalone) {
+  if (isFirstTime && !isStandalone) {
     openOverlay('welcome-ov');
   }
 })();
