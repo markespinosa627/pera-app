@@ -826,6 +826,46 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
  #home-upcoming {grid-column:7/13}
 }
 
+.ring-control {position:relative;width:clamp(98px,15vw,154px);aspect-ratio:1;border:0;background:transparent;color:var(--ink);padding:0;cursor:pointer}
+.ring-control svg {display:block;width:100%;height:100%}
+.ring-control circle {transition:opacity .16s}
+.ring-center {position:absolute;inset:20%;display:flex;flex-direction:column;justify-content:center;align-items:center;font:inherit;line-height:1.15}
+.ring-center small,.payday-group h3 small,#home-upcoming .feature-head>small {font-size:11px;color:var(--ink3)}
+.ring-center b {font-size:clamp(12px,1.4vw,19px);max-width:100%;overflow-wrap:anywhere}
+.v-legend button {padding:6px 8px;border-radius:8px}
+.v-legend button[aria-pressed=true] {background:var(--accent-soft);color:var(--accent-ink);font-weight:700;box-shadow:inset 0 -2px var(--accent)}
+.payday-group {margin:10px 0 0;padding-left:13px;border-left:2px solid var(--line)}
+.payday-group h3 {display:flex;align-items:center;gap:8px;font-size:14px;margin:0 0 3px}
+.payday-group h3 i {width:10px;height:10px;background:var(--accent);border:2px solid var(--card);border-radius:50%;margin-left:-19px}
+.payday-group h3 small {margin-left:auto;font-weight:600}
+.timeline-row {border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center}
+.timeline-pay {min-width:0;flex:1;display:grid;grid-template-columns:32px minmax(0,1fr) auto;align-items:center;gap:7px;border:0;background:none;color:var(--ink);text-align:left;padding:9px 0;font:inherit;cursor:pointer}
+.date-tile {text-align:center;border:1px solid var(--line);border-radius:7px;overflow:hidden;line-height:1.25}
+.date-tile small {display:block;background:var(--accent-soft);color:var(--accent-ink);font-size:9px;text-transform:uppercase}
+.date-tile b,.timeline-name strong,.timeline-amount b {font-size:13px}
+.timeline-name strong {display:block;overflow-wrap:anywhere}
+.timeline-name small,.timeline-empty,.timeline-future summary {color:var(--ink3);font-size:12px}
+.timeline-empty {padding:8px 0}
+.timeline-amount {display:grid;justify-items:end;gap:3px}
+.payment-state {display:inline-flex;gap:4px;align-items:center;white-space:nowrap;font-size:11px;font-weight:600;color:var(--ink3)}
+.payment-state i {font-style:normal;font-weight:800}
+.payment-state.settled {color:var(--green)}
+.payment-state.late {color:var(--red)}
+.payment-state.soon {color:var(--accent-ink)}
+.timeline-shift summary {cursor:pointer;list-style:none;padding:12px 6px;color:var(--accent-ink)}
+.timeline-shift summary::-webkit-details-marker {display:none}
+.timeline-shift[open] {flex-basis:100%;display:flex;text-align:right}
+.timeline-shift[open] summary {display:inline-block;padding:8px}
+.timeline-shift button {background:var(--accent-soft);color:var(--accent-ink);border:0;border-radius:8px;padding:10px 12px;font:inherit;font-size:12px;cursor:pointer}
+.timeline-future {margin-top:12px}
+.timeline-future summary {cursor:pointer}
+.payoff-marks {display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin:7px 0;color:var(--ink2);font-size:12px}
+.payoff-marks i {display:inline-block;width:9px;height:9px;border-radius:50%;border:1px solid var(--ink3)}
+.payoff-marks .done {background:var(--accent);border-color:var(--accent)}
+.payoff-marks span {margin-left:3px}
+.payoff-marks progress {accent-color:var(--accent);height:8px}
+@media(max-width:400px){.timeline-pay {gap:4px}.timeline-amount b {font-size:12px}.timeline-shift summary{padding:12px 4px}}
+
 </style>
 </head>
 <body>
@@ -2690,7 +2730,7 @@ function renderCalendarAgenda(pid) {
   const section = (title, entries, tab) => `<section class="agenda-group">
     <div class="agenda-heading"><h3>${title}</h3><button type="button" class="text-action" onclick="goTab('${tab}')">Open ${title.toLowerCase()}</button></div>
     ${entries.length ? entries.sort((a,b) => compareDueDates(a.dueDate, b.dueDate)).map(entry => `<div class="agenda-row">
-      <div><strong>${esc(entry.name)}</strong><small>${entry.dueDate ? 'Due ' + dueLabel(entry.dueDate) + ' · ' : ''}${entry.remaining <= 0 ? 'Paid' : entry.remaining < entry.amount ? 'Partially paid' : 'Scheduled'}</small></div>
+      <div><strong>${esc(entry.name)}</strong><small>${entry.dueDate ? 'Due ' + dueLabel(entry.dueDate) + ' · ' : ''}${paymentBadge(entry.remaining,entry.dueDate,entry.remaining < entry.amount)}</small></div>
       <span class="feature-amount num">${fPHP(entry.remaining || entry.amount)}</span>
     </div>`).join('') : '<p class="feature-note">Nothing scheduled.</p>'}</section>`;
   document.getElementById('calendar-agenda').innerHTML = `
@@ -2743,7 +2783,7 @@ function refreshDueEntries() {
 function dueRows(entries, empty) {
   return entries.map(entry => `<button class="ledger-row" type="button" onclick="openDueEntry(${entry.key})">
     <span><strong>${esc(entry.name)}</strong><small>${entry.date ? 'Due ' + dueLabel(entry.date) : 'Due date unset'} · From ${getPDef(entry.pid).shortLabel} pay</small></span>
-    <b class="feature-amount">${entry.remaining ? fAmt(entry.remaining,entry.currency) : 'Paid'}</b></button>`).join('') ||
+    <span class="timeline-amount"><b class="feature-amount">${fAmt(entry.remaining,entry.currency)}</b>${paymentBadge(entry.remaining,entry.date)}</span></button>`).join('') ||
     `<p class="quiet">${empty}</p>`;
 }
 
@@ -2810,6 +2850,129 @@ function extraPaymentOrder(account) {
     ...account.unpaid.filter(s=>periodIndex.get(s.pid)>index).reverse()];
 }
 
+function paymentBadge(remaining, date, partial = false) {
+  let state = ['scheduled', '○', partial ? 'Part paid' : 'Scheduled'];
+  if (remaining <= 0) state = ['settled', '✓', 'Paid'];
+  else if (parseDueDate(date)) {
+    const today = new Date();
+    const midnight = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+    const days = (Date.parse(date + 'T00:00:00Z') - midnight) / 86400000;
+    if (days < 0) state = ['late', '!', 'Overdue'];
+    else if (days <= 3) state = ['soon', '◷', days === 0 ? 'Due today' : 'Due soon'];
+  }
+  return `<span class="payment-state ${state[0]}"><i aria-hidden="true">${state[1]}</i>${state[2]}</span>`;
+}
+
+function alternatePayday(pid) {
+  const period = getPDef(pid);
+  return PERIOD_DEFS[periodIndex.get(pid) + (period.half === 15 ? 1 : -1)];
+}
+
+function canShiftPayment(entry, target) {
+  if (!entry.remaining) return false;
+  if (entry.bill) return !Number(entry.bill.paidAmt) && !entry.bill.extraApplied && !entry.bill.extraPayment;
+  return !installmentPaid(entry.inst, entry.pid) &&
+    entry.inst.amountByPeriod?.[entry.pid] === undefined &&
+    !getInstOccurrence(entry.inst, periodIndex.get(target.id));
+}
+
+function shiftPayment(key) {
+  const entry = dueEntries[key];
+  if (!entry) return;
+  const target = alternatePayday(entry.pid);
+  if (!canShiftPayment(entry, target)) return;
+  if (entry.bill) {
+    const bills = S.bills[entry.pid];
+    const index = bills.indexOf(entry.bill);
+    if (index < 0) return;
+    bills.splice(index, 1);
+    (S.bills[target.id] ||= []).push(entry.bill);
+    entry.bill.fundingMode = 'manual';
+  } else {
+    const inst = entry.inst;
+    const slots = inst.schedule || scheduledPayments(inst.startPeriodId, inst.freq || 'both', inst.totalMonths);
+    inst.schedule = slots.map(({id, dueDate}) => ({id: id === entry.pid ? target.id : id, dueDate}));
+  }
+  save();
+  renderAll();
+  const moved = dueEntries.find(e => e.pid === target.id && (entry.bill ? e.bill === entry.bill : e.inst === entry.inst));
+  if (moved) document.getElementById('timeline-pay-' + moved.key)?.focus();
+}
+
+function paydayTimeline(pid) {
+  const p = getPDef(pid);
+  const periods = periodsByYear.get(p.year).slice(p.month * 2, p.month * 2 + 2);
+  return `<div class="feature-head"><h2>Payday timeline</h2><small>${monthNames[p.month]} ${p.year}</small></div>` +
+    periods.map(period => {
+      const entries = dueEntries.filter(e => e.pid === period.id);
+      const target = alternatePayday(period.id);
+      const remaining = entries.reduce((sum,e) => sum + toPHP(e.remaining,e.currency), 0);
+      return `<section class="payday-group"><h3><i aria-hidden="true"></i>${period.half === 15 ? '15th' : 'Month-end'}<small class="feature-amount" title="Remaining">${fPHP(remaining)}</small></h3>
+        ${entries.map(e => {
+          const day = parseDueDate(e.date);
+          const label = e.bill && e.bill.category !== 'debt' ? 'Bill' : 'Debt';
+          return `<div class="timeline-row"><button class="timeline-pay" id="timeline-pay-${e.key}" onclick="openDueEntry(${e.key})">
+            <span class="date-tile" aria-label="${day ? 'Due '+dueLabel(e.date) : 'Due date unset'}"><small>${day ? monthNames[day.month] : 'Due'}</small><b>${day ? day.day : '—'}</b></span>
+            <span class="timeline-name"><strong>${esc(e.name)}</strong><small>${label}</small></span>
+            <span class="timeline-amount"><b class="feature-amount">${fAmt(e.remaining || (e.bill ? e.bill.amount : installmentAmount(e.inst,e.pid)),e.currency)}</b>${paymentBadge(e.remaining,e.date)}</span></button>
+            ${canShiftPayment(e,target) ? `<details class="timeline-shift"><summary aria-label="Change funding payday for ${esc(e.name)}" title="Change funding payday">⇄</summary><button onclick="shiftPayment(${e.key})">Move to ${target.shortLabel}</button></details>` : ''}</div>`;
+        }).join('') || '<div class="timeline-empty">Nothing due</div>'}</section>`;
+    }).join('');
+}
+
+let ringParts = [], ringActive = -1, ringPeriod = '';
+function ringChart(parts) {
+  const total = parts.reduce((sum,part) => sum + Math.max(0,part[1]),0);
+  let offset = 0;
+  const slices = parts.map(([label,value,,color],i) => {
+    if (value <= 0) return '';
+    const share = value / total * 100;
+    const start = offset;
+    offset += share;
+    return `<circle cx="60" cy="60" r="51" pathLength="100" fill="none" stroke="${color}" stroke-width="13" stroke-dasharray="${share} ${100-share}" stroke-dashoffset="${-start}" transform="rotate(-90 60 60)" opacity="${ringActive < 0 || ringActive === i ? 1 : .25}" data-part="${i}"/>`;
+  }).join('');
+  const item = parts[ringActive];
+  const percent = total && item ? Math.round(Math.max(0,item[1]) / total * 100) : 0;
+  return `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="51" fill="none" stroke="var(--line)" stroke-width="13"/>${slices}</svg>
+    <span class="ring-center" aria-live="polite">${item ? `<small>${item[0]}</small><b class="feature-amount">${fPHP0(item[1])}</b><small class="feature-amount">${percent}%</small>` : '<small>Payday</small><b>Mix</b>'}</span>`;
+}
+
+function pickRingSlice(event,button) {
+  const rect = button.getBoundingClientRect();
+  const x = (event.clientX-rect.left)/rect.width - .5;
+  const y = (event.clientY-rect.top)/rect.height - .5;
+  if (!event.detail || Math.hypot(x,y) < .35) {
+    selectRing((ringActive + 1) % ringParts.length);
+    return;
+  }
+  const fraction = (Math.atan2(x,-y)/(Math.PI*2) + 1) % 1;
+  const total = ringParts.reduce((n,p) => n + Math.max(0,p[1]),0);
+  let end = 0;
+  const index = ringParts.findIndex(p => (end += Math.max(0,p[1])) > fraction * total);
+  if (index >= 0) selectRing(index);
+}
+
+function selectRing(index) {
+  ringActive = index === ringActive ? -1 : index;
+  const chart = document.getElementById('payday-ring');
+  chart.innerHTML = ringChart(ringParts);
+  document.querySelectorAll('.v-legend [data-part]').forEach(button =>
+    button.setAttribute('aria-pressed', Number(button.dataset.part) === ringActive));
+}
+
+function debtMilestones(account) {
+  if (account.type === 'Credit balance' || !account.slots.length) return '';
+  const slots = account.slots;
+  const done = slots.filter(slot => slot.remaining <= 0).length;
+  if (slots.length === 1) {
+    const date = slots[0].dueDate;
+    return `<div class="payoff-marks"><i aria-hidden="true" class="${done ? 'done' : ''}"></i><span>One-time · ${done ? 'Paid' : date ? 'Due '+dueLabel(date) : 'Due date unset'}</span></div>`;
+  }
+  const marks = slots.length <= 24 ? slots.map(slot => `<i aria-hidden="true" class="${slot.remaining <= 0 ? 'done' : ''}"></i>`).join('') :
+    `<progress aria-label="Installments paid" value="${done}" max="${slots.length}"></progress>`;
+  return `<div class="payoff-marks">${marks}<span>${done}/${slots.length} paid</span></div>`;
+}
+
 function renderPaydayPlanner(pid) {
   const next = PERIOD_DEFS[periodIndex.get(pid) + 1];
   const savings = getAlloc(pid);
@@ -2821,33 +2984,28 @@ function renderPaydayPlanner(pid) {
     ['Expenses',expenses,'expenses','#b4a280'],['Savings',savings,'savings','#8da394'],
     ['Available',Math.max(0,safe),'overview','#5953a5']
   ];
-  const total = parts.reduce((sum,part)=>sum+Math.max(0,part[1]),0);
-  let angle = 0;
-  const stops = parts.filter(part => part[1] > 0).map(([,value,,color]) => {
-    const start = angle;
-    angle += 360 * value / total;
-    return `${color} ${start}deg ${angle}deg`;
-  });
-  const ring = stops.length ? `conic-gradient(${stops.join(',')})` : 'var(--line)';
+  if (pid !== ringPeriod) ringActive = -1;
+  ringPeriod = pid;
+  ringParts = parts;
   const due = getBillsTotal(pid) + getCCDue(pid);
   const paid = getBillsPaid(pid) + getCCPaid(pid);
   const percent = due > 0 ? Math.min(100, Math.round(paid / due * 100)) : 0;
-  const detail = "document.getElementById('overview-lead').open=true;document.getElementById('overview-lead').scrollIntoView()";
   document.getElementById('payday-planner').innerHTML = `
     <div class="v-balance"><div><h2>${safe < 0 ? 'Shortfall' : 'Available to spend'}</h2>
       <div class="money-value feature-amount ${safe < 0 ? 'short-money' : ''}">${fPHP(Math.abs(safe))}</div>
       <div class="v-mini">${next ? 'Next payday ' + next.label : getPDef(pid).label}</div>
-    </div><div class="v-ring feature-amount" role="img" aria-label="Payday breakdown: ${parts.map(([name,value])=>name+' '+fPHP0(value)).join(', ')}" style="background:${ring}"></div></div>
-    <div class="v-legend" aria-label="Payday breakdown">${parts.map(([label,amount,tab,color]) =>
-      `<button title="${label} · ${fPHP(amount)}" onclick="${tab==='overview' ? detail : `goTab('${tab}')`}"><i style="background:${color}"></i>${label}</button>`).join('')}</div>
+    </div><button type="button" class="ring-control" id="payday-ring" aria-label="Payday breakdown, explore categories" onclick="pickRingSlice(event,this)">${ringChart(parts)}</button></div>
+    <div class="v-legend" aria-label="Payday breakdown">${parts.map(([label,,,color],i) =>
+      `<button type="button" data-part="${i}" aria-pressed="${ringActive === i}" onclick="selectRing(${i})"><i style="background:${color}"></i>${label}</button>`).join('')}</div>
     <div class="v-settled"><div><span>Payments settled</span><strong class="feature-amount">${due ? percent+'%' : 'None due'}</strong></div>
       <progress aria-label="Payments settled" max="100" value="${percent}"></progress></div>`;
   refreshDueEntries();
   const cutoff = periodIndex.get(pid);
   const period = getPDef(pid);
-  const boundary = period.year + '-' + String(period.month+1).padStart(2,'0') + '-' + String(period.half === 15 ? 15 : new Date(period.year,period.month+1,0).getDate());
-  const upcoming = dueEntries.filter(e => e.remaining > 0 && (e.date ? e.date >= boundary || e.pid === pid : periodIndex.get(e.pid) >= cutoff)).slice(0,3);
-  document.getElementById('home-upcoming').innerHTML = '<h2>Upcoming</h2>' + dueRows(upcoming,'Nothing due.');
+  const later = dueEntries.filter(e => periodIndex.get(e.pid) > cutoff &&
+    (getPDef(e.pid).month !== period.month || getPDef(e.pid).year !== period.year) && e.remaining > 0).slice(0,3);
+  document.getElementById('home-upcoming').innerHTML = paydayTimeline(pid) +
+    (later.length ? '<details class="timeline-future"><summary>Upcoming</summary>' + dueRows(later,'') + '</details>' : '');
 
 }
 
@@ -2863,7 +3021,7 @@ function getPayoffAccounts() {
     currency: group.currency,
     slots: group.instances.map(({pid, orig}) => ({
       pid,
-      amount:orig.amount, remaining: amountRemaining(orig.amount, orig.paidAmt),
+      dueDate:orig.dueDate, amount:orig.amount, remaining: amountRemaining(orig.amount, orig.paidAmt),
       currency: orig.currency || 'PHP',
       apply(payment) {
         orig.amount = amountRemaining(orig.amount, payment);
@@ -2877,8 +3035,8 @@ function getPayoffAccounts() {
       label: line.name + ' · ' + inst.name,
       type: 'Credit installment', sourceInst:inst,
       currency: 'PHP',
-      slots: (inst.schedule || scheduledPayments(inst.startPeriodId, inst.freq || 'both', inst.totalMonths)).map(({id: pid}) => ({
-        pid,
+      slots: (inst.schedule || scheduledPayments(inst.startPeriodId, inst.freq || 'both', inst.totalMonths)).map(({id: pid, dueDate}) => ({
+        pid, dueDate,
         amount:inst.monthlyAmt, remaining: amountRemaining(installmentAmount(inst, pid), installmentPaid(inst, pid)),
         apply(payment) {
           (inst.amountByPeriod ||= {})[pid] = amountRemaining(installmentAmount(inst, pid), payment);
@@ -2910,13 +3068,12 @@ function renderDebtPayoff(pid) {
       <strong class="feature-amount num">${fPHP(total)}</strong>
     </div>
     <div class="payoff-list">${payoffAccounts.map((account, index) => {
-      const scheduled = account.slots.reduce((sum,slot)=>sum+toPHP(slot.amount || 0,slot.currency || account.currency),0);
       const period = getPDef(account.lastDue);
       const nextUnpaid = account.unpaid.find(slot => periodIndex.get(slot.pid) >= periodIndex.get(currentPeriod.id));
       const payable = dueEntries.find(e => e.remaining > 0 && (account.sourceBills?.includes(e.bill) || (account.sourceInst && account.sourceInst === e.inst)));
       const nextPayment = nextUnpaid ? ' · Next payment ' + getPDef(nextUnpaid.pid).label : '';
       const estimate = account.balance <= 0 ? 'Paid off' : period ? 'Last unpaid period · ' + period.label : 'No payoff date scheduled';
-      return `<div class="feature-row"><div><strong>${esc(account.label)}</strong><p>${account.type} · ${estimate}${nextPayment}</p>${scheduled > 0 ? `<progress class="loan-progress" aria-label="Scheduled balance repaid" max="${scheduled}" value="${Math.max(0,scheduled-account.balance)}"></progress>` : ''}</div>
+      return `<div class="feature-row"><div><strong>${esc(account.label)}</strong>${debtMilestones(account)}<details class="feature-note"><summary>Schedule</summary><p>${account.type} · ${estimate}${nextPayment}</p></details></div>
         <span class="feature-amount num">${fPHP(account.balance)}</span>
         ${payable ? `<button type="button" class="settings-btn" onclick="openDueEntry(${payable.key})">Log payment</button>` : ''}
         ${account.balance > 0 && !account.mixedCurrency ? `<button type="button" class="settings-btn" onclick="openExtraPayment(${index})">Log extra payment</button>` : ''}
@@ -3312,7 +3469,7 @@ function renderBillsTab(pid, debtOnly = false) {
             <div class="bill-amt num" style="color:var(--purp)">${fPHP(dueAmount)}</div>
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px">
-            <span class="status-pill sp-${stat.toLowerCase()}" style="${isFullyPaid ? '' : 'color:var(--purp); background:var(--pbg); border-color:var(--pbr);'}">${stat}</span>
+            ${paymentBadge(amountRemaining(dueAmount,pPaid),dateOf(item),pPaid > 0)}
             <button class="pay-btn" onclick="${isFullyPaid ? `unpayCC('${cl.id}', '${inst.id}', '${pid}')` : `openCCPay('${cl.id}', '${inst.id}', '${pid}')`}" style="${isFullyPaid ? '' : 'background:var(--ink);color:var(--bg-color)'}">${isFullyPaid?'Unmark':'Pay'}</button>
           </div>
           ${pPaid > 0 && !isFullyPaid ? `
@@ -3347,7 +3504,7 @@ function renderBillsTab(pid, debtOnly = false) {
             <div class="bill-amt num">${fAmt(b.amount, b.currency)}</div>
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px">
-            <span class="status-pill sp-${b.status.toLowerCase()}">${b.status}</span>
+            ${paymentBadge(amountRemaining(b.amount,pPaid),b.dueDate,pPaid > 0)}
             ${locked && ip ? '' : `<button class="pay-btn" onclick="${ip ? `unpayBill('${pid}',${i})` : `openBillPay('${pid}',${i})`}" style="${ip ? '' : 'background:var(--ink);color:var(--bg-color)'}">${ip?'Unmark':'Pay'}</button>`}
           </div>
           ${pPaid > 0 && pPaid < b.amount ? `
@@ -3880,11 +4037,15 @@ function saveCCInst(){
     alert('Choose funding periods that fit the calendar and give each credit installment its own pay period.');
     return;
   }
-  const schedule = dueDate ? periods.map(({id, dueDate}) => ({id, dueDate})) : undefined;
+  const sameSchedule = existing && existing.totalMonths == months && (existing.freq || 'both') === freq &&
+    (existing.dueDate || '') === dueDate && (existing.fundingMode || (dueDate ? 'auto' : 'manual')) === mode &&
+    existing.startPeriodId === document.getElementById('ci-start').value;
+  const schedule = sameSchedule && existing.schedule ? existing.schedule :
+    dueDate ? periods.map(({id, dueDate}) => ({id, dueDate})) : undefined;
   const changes = {name, monthlyAmt:amt, totalMonths:months, startPeriodId:dueDate ? periods[0].id :
     document.getElementById('ci-start').value, freq, dueDate, fundingMode:mode, schedule};
   if (existing) {
-    const newIds = new Set(periods.map(p => p.id));
+    const newIds = new Set((schedule || periods).map(p => p.id));
     if (Object.keys(existing.paidPeriods || {}).some(id => existing.paidPeriods[id] && !newIds.has(id))) {
       alert('Keep the funding periods of payments you have already recorded.');
       return;
