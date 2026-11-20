@@ -778,7 +778,55 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
   .drawer-logo,.logo {letter-spacing:-.045em}
   .hero,.drawer-link.active,.scan-btn,.ov-card,.settings-btn {box-shadow:none}
   .feature-row progress {accent-color:var(--accent)}
-  </style>
+
+/* A compact financial overview using the existing theme colors. */
+#pane-overview.active {display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:12px}
+#pane-overview > * {min-width:0}
+#payday-planner {padding:0;overflow:hidden}
+.v-balance {display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:clamp(16px,3vw,30px);background:linear-gradient(110deg,var(--card),var(--accent-soft))}
+.v-balance h2 {color:var(--ink2);font-size:14px;letter-spacing:0}
+.v-balance .money-value {margin:4px 0;font-size:clamp(35px,5vw,64px)}
+.v-ring {width:clamp(70px,12vw,118px);aspect-ratio:1;border-radius:50%;position:relative}
+.v-ring:after {content:'';position:absolute;inset:16%;border-radius:50%;background:var(--card)}
+.v-legend {display:flex;flex-wrap:wrap;gap:3px 12px;padding:8px 16px;border-top:1px solid var(--line)}
+.v-legend button {background:none;border:0;color:var(--ink2);font:inherit;font-size:12px;min-height:35px;cursor:pointer}
+.v-legend i {display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.v-settled {padding:0 16px 14px}
+.v-settled div {display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--ink3)}
+.v-settled progress {width:100%;height:7px;accent-color:var(--accent);display:block;margin-top:5px}
+#home-shortcuts {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#home-shortcuts button {display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 5px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;font-size:13px;font-weight:650;cursor:pointer}
+#home-shortcuts button:first-child {background:var(--accent);border-color:var(--accent);color:#fff}
+#home-shortcuts b {font-size:17px;font-weight:500}
+#pane-overview #ov-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#pane-overview .ov-card {min-height:84px;padding:12px;text-align:left}
+#pane-overview .ov-card-val {position:relative;z-index:1;font-size:clamp(17px,2vw,25px);line-height:1.2}
+#pane-overview .ov-card .sparkline {height:21px;opacity:.45}
+#pane-overview .ov-card:last-child:nth-child(odd) {grid-column:1/-1}
+#ov-income-preview,#home-upcoming {padding:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+#ov-income-preview .crd,#ov-income-preview .crd-body {box-shadow:none;border:0;padding:0}
+#ov-income-preview .sec-label {margin:4px 0}
+#ov-income-preview h2,#home-upcoming h2,#spending-overview h2 {margin-bottom:8px;font-size:16px}
+#home-upcoming .ledger-row {padding:9px 0}
+#overview-lead {grid-column:1/-1;order:9}
+.v-mini {display:flex;align-items:center;gap:8px;color:var(--ink3);font-size:12px}
+@media(min-width:750px){
+ #pane-overview.active {grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+ #pane-overview #ov-grid {grid-template-columns:repeat(5,minmax(0,1fr));grid-column:1/-1}
+ #pane-overview .ov-card:last-child:nth-child(odd) {grid-column:auto}
+ #payday-planner {grid-column:1/-1}
+ #home-shortcuts {grid-column:1/-1}
+}
+@media(min-width:1180px){
+ #pane-overview.active {grid-template-columns:repeat(12,minmax(0,1fr))}
+ #payday-planner {grid-column:1/10}
+ #home-shortcuts {grid-column:10/13;grid-template-columns:1fr;align-self:stretch}
+ #home-shortcuts button {justify-content:flex-start;padding:10px 16px}
+ #ov-income-preview {grid-column:1/7}
+ #home-upcoming {grid-column:7/13}
+}
+
+</style>
 </head>
 <body>
 <!-- Navigation -->
@@ -877,11 +925,15 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
     </div>
   </div>
   </details>
-<section id="home-upcoming" class="crd feature-card"></section>
-    <details class="home-details"><summary>Period accounts and activity</summary><div class="ov-grid" id="ov-grid"></div>
-    <div id="ov-income-preview"></div>
-    <div id="ov-bills-preview"></div>
-    <div class="crd spending-card" id="spending-overview"></div></details>
+    <div id="home-shortcuts" aria-label="Quick actions">
+      <button onclick="openExpModal()"><b aria-hidden="true">＋</b>Expense</button>
+      <button onclick="openDebtModal()"><b aria-hidden="true">＋</b>Bill</button>
+      <button onclick="openIncomeModal()"><b aria-hidden="true">↙</b>Income</button>
+    </div>
+    <div class="ov-grid" id="ov-grid"></div>
+    <section id="ov-income-preview" aria-label="Income"></section>
+    <section id="home-upcoming" class="crd feature-card"></section>
+    <div class="crd spending-card" id="spending-overview"></div>
   </div>
 
   <div class="tab-pane" id="pane-calendar">
@@ -2729,7 +2781,7 @@ function sixPeriodChart(pid) {
     p, income:getReceivedIncomePHP(p.id), out:getBillsTotal(p.id)+getCCDue(p.id)+getExpTotal(p.id)
   }));
   const max = Math.max(1,...rows.flatMap(r=>[r.income,r.out]));
-  return `<h2>Income vs. outflow</h2><p class="quiet">Up to six pay periods ending ${getPDef(pid).label}. Outflow includes scheduled commitments and logged expenses.</p>
+  return `<h2>Income vs. outflow</h2><p class="quiet">Last ${rows.length} periods · ${getPDef(pid).label}</p>
     <div class="chart-key"><span>Received income</span><span>Outflow</span></div>` + rows.map(({p,income,out}) =>
     `<div class="history-row"><strong>${p.shortLabel}</strong><div class="paired-bars" aria-hidden="true"><i style="width:${100*income/max}%"></i><i style="width:${100*out/max}%"></i></div><small class="feature-amount">${fPHP0(income)} / ${fPHP0(out)}</small></div>`).join('');
 }
@@ -2770,25 +2822,32 @@ function renderPaydayPlanner(pid) {
     ['Available',Math.max(0,safe),'overview','#5953a5']
   ];
   const total = parts.reduce((sum,part)=>sum+Math.max(0,part[1]),0);
-  const action = tab => tab === 'overview' ? "document.getElementById('overview-lead').open=true" : `goTab('${tab}')`;
+  let angle = 0;
+  const stops = parts.filter(part => part[1] > 0).map(([,value,,color]) => {
+    const start = angle;
+    angle += 360 * value / total;
+    return `${color} ${start}deg ${angle}deg`;
+  });
+  const ring = stops.length ? `conic-gradient(${stops.join(',')})` : 'var(--line)';
+  const due = getBillsTotal(pid) + getCCDue(pid);
+  const paid = getBillsPaid(pid) + getCCPaid(pid);
+  const percent = due > 0 ? Math.min(100, Math.round(paid / due * 100)) : 0;
+  const detail = "document.getElementById('overview-lead').open=true;document.getElementById('overview-lead').scrollIntoView()";
   document.getElementById('payday-planner').innerHTML = `
-    <button class="money-head" onclick="document.getElementById('overview-lead').open=true;document.getElementById('overview-lead').scrollIntoView()">
-      ${safe < 0 ? 'Shortfall' : 'Available to spend'} <span aria-hidden="true">⌄</span></button>
-    <div class="money-value feature-amount ${safe < 0 ? 'short-money' : ''}">${fPHP(Math.abs(safe))}</div>
-    <p class="quiet">After bills, debt payments, expenses, and savings.</p>
-    <p class="quiet">${next ? 'Next payday ' + next.label : getPDef(pid).label}</p>
-    <section class="payday-chart"><h2>Payday breakdown</h2>
-      <div class="segment-track">${parts.filter(p=>p[1]>0).map(([name,value,tab,color])=>
-        `<button aria-label="${name} ${fPHP(value)}" style="width:${value/total*100}%;background:${color}" onclick="${action(tab)}"></button>`).join('')}</div>
-      <div class="segment-key">${parts.map(([name,value,tab,color])=>
-        `<button onclick="${action(tab)}"><i style="background:${color}"></i>${name} <b class="feature-amount">${fPHP0(value)}</b></button>`).join('')}</div>
-    </section>`;
+    <div class="v-balance"><div><h2>${safe < 0 ? 'Shortfall' : 'Available to spend'}</h2>
+      <div class="money-value feature-amount ${safe < 0 ? 'short-money' : ''}">${fPHP(Math.abs(safe))}</div>
+      <div class="v-mini">${next ? 'Next payday ' + next.label : getPDef(pid).label}</div>
+    </div><div class="v-ring feature-amount" role="img" aria-label="Payday breakdown: ${parts.map(([name,value])=>name+' '+fPHP0(value)).join(', ')}" style="background:${ring}"></div></div>
+    <div class="v-legend" aria-label="Payday breakdown">${parts.map(([label,amount,tab,color]) =>
+      `<button title="${label} · ${fPHP(amount)}" onclick="${tab==='overview' ? detail : `goTab('${tab}')`}"><i style="background:${color}"></i>${label}</button>`).join('')}</div>
+    <div class="v-settled"><div><span>Payments settled</span><strong class="feature-amount">${due ? percent+'%' : 'None due'}</strong></div>
+      <progress aria-label="Payments settled" max="100" value="${percent}"></progress></div>`;
   refreshDueEntries();
   const cutoff = periodIndex.get(pid);
   const period = getPDef(pid);
   const boundary = period.year + '-' + String(period.month+1).padStart(2,'0') + '-' + String(period.half === 15 ? 15 : new Date(period.year,period.month+1,0).getDate());
   const upcoming = dueEntries.filter(e => e.remaining > 0 && (e.date ? e.date >= boundary || e.pid === pid : periodIndex.get(e.pid) >= cutoff)).slice(0,3);
-  document.getElementById('home-upcoming').innerHTML = '<h2>Upcoming</h2>' + dueRows(upcoming,'No upcoming obligations recorded.');
+  document.getElementById('home-upcoming').innerHTML = '<h2>Upcoming</h2>' + dueRows(upcoming,'Nothing due.');
 
 }
 
@@ -2847,7 +2906,7 @@ function renderDebtPayoff(pid) {
   const payments = (S.bills[pid] || []).filter(bill => bill.extraPayment);
   const totalExtra = payments.reduce((sum, bill) => sum + toPHP(bill.amount, bill.currency || 'PHP'), 0);
   document.getElementById('debt-payoff').innerHTML = `
-    <div class="feature-head"><div><h2>Total outstanding</h2><p>Tracked loans and credit balances</p></div>
+    <div class="feature-head"><div><h2>Total outstanding</h2><p>Loans &amp; credit</p></div>
       <strong class="feature-amount num">${fPHP(total)}</strong>
     </div>
     <div class="payoff-list">${payoffAccounts.map((account, index) => {
@@ -2863,7 +2922,7 @@ function renderDebtPayoff(pid) {
         ${account.balance > 0 && !account.mixedCurrency ? `<button type="button" class="settings-btn" onclick="openExtraPayment(${index})">Log extra payment</button>` : ''}
       </div>`;
     }).join('') || '<p>No debt balances tracked yet.</p>'}</div>
-    <p class="feature-note">Payoff dates follow your recorded schedule. Interest and fees are included only if you enter them in the balance or scheduled payments.</p>
+    <details class="feature-note"><summary>Projection details</summary>Based on recorded payments, interest, and fees.</details>
     ${payments.length ? `<p class="feature-note">Extra payments logged in ${getPDef(pid).label} · <strong class="feature-amount num">${fPHP(totalExtra)}</strong></p>` : ''}`;
 }
 
@@ -3103,7 +3162,7 @@ function renderOverview(pid, pIdx, income, bills, exp, debt, avail, alloc) {
     <button type="button" class="ov-card" onclick="goTab('income')"><div class="ov-card-label">Income received<span aria-hidden="true">↗</span></div><div class="ov-card-val num g">${fPHP0(income)} <span style="font-size:11px;color:var(--ink3);font-weight:600;font-family:'Geist',sans-serif">/ ${fPHP0(expectedInc + roll)}</span></div><div class="ov-card-sub">${srcs.length} sources</div>${incTrend}</button>
     <button type="button" class="ov-card" onclick="goTab('bills')"><div class="ov-card-label">Bills<span aria-hidden="true">↗</span></div><div class="ov-card-val num r">${fPHP0(bills)}</div><div class="ov-card-sub">${(S.bills[pid]||[]).filter(b=>b.category !== 'debt' && b.status !== 'PAID').length} unpaid</div></button>
     <button type="button" class="ov-card" onclick="goTab('expenses')"><div class="ov-card-label">Expenses<span aria-hidden="true">↗</span></div><div class="ov-card-val num y">${fPHP0(exp)}</div><div class="ov-card-sub">${(S.expenses[pid]||[]).length} logged</div>${expTrend}</button>
-    <button type="button" class="ov-card" onclick="goTab('credit')"><div class="ov-card-label">Debt due<span aria-hidden="true">↗</span></div><div class="ov-card-val num p">${fPHP0(debt)}</div><div class="ov-card-sub">Loans and credit installments</div></button>
+    <button type="button" class="ov-card" onclick="goTab('credit')"><div class="ov-card-label">Debt due<span aria-hidden="true">↗</span></div><div class="ov-card-val num p">${fPHP0(debt)}</div><div class="ov-card-sub">Scheduled</div></button>
     <button type="button" class="ov-card" onclick="goTab('savings')"><div class="ov-card-label">Savings allocated<span aria-hidden="true">↗</span></div><div class="ov-card-val num g">${fPHP0(alloc)}</div><div class="ov-card-sub">${fPHP0(avail-alloc)} unalloc.</div></button>
   `;
 
@@ -3129,37 +3188,23 @@ function renderOverview(pid, pIdx, income, bills, exp, debt, avail, alloc) {
     ovHtml += `<div class="row-item stagger-item"><div class="row-dot" style="background:var(--blue)"></div><div class="row-det"><div class="row-name">Period Rollover</div><div class="row-sub">From previous period</div></div><div class="row-amt num" style="color:var(--blue)">${roll>0?'+':''}${fPHP0(roll)}</div></div>`;
   }
   if (recvd.length > 0) {
-    ovHtml += `<div class="sec-label">Actual / Received</div>` + recvd.map((s,i) => { del++; return renderItemOV(s, true, del); }).join('');
+    ovHtml += `<div class="sec-label">Received</div>` + recvd.map((s,i) => { del++; return renderItemOV(s, true, del); }).join('');
   }
   if (proj.length > 0) {
-    ovHtml += `<div class="sec-label">Projected / Expected</div>` + proj.map((s,i) => { del++; return renderItemOV(s, false, del); }).join('');
+    ovHtml += `<div class="sec-label">Expected</div>` + proj.map((s,i) => { del++; return renderItemOV(s, false, del); }).join('');
   }
   if (srcs.length === 0 && (!S.enableRollover || !roll)) {
-    ovHtml += `<div class="empty-state stagger-item"><div class="empty-icon">🪹</div><div class="empty-title">No income</div><div class="empty-desc">Add an income source to plan this pay period.</div></div>`;
+    ovHtml += `<div class="empty-state stagger-item"><div class="empty-icon">🪹</div><div class="empty-title">No income</div><div class="empty-desc"><button class="text-action" onclick="openIncomeModal()">Add income</button></div></div>`;
   }
 
   document.getElementById('ov-income-preview').innerHTML=`
-    <div class="sec-label">Income this period</div>
+    <h2>Income</h2>
     <div class="crd"><div class="crd-body">
       ${ovHtml}
     </div></div>
   `;
 
-  const unpaid = (S.bills[pid]||[]).filter(b=>b.category !== 'debt' && b.status !== 'PAID').sort((a,b) => compareDueDates(a.dueDate,b.dueDate)).slice(0,3);
-  document.getElementById('ov-bills-preview').innerHTML = unpaid.length ? `
-    <div class="sec-label">Unpaid bills</div>
-    <div class="crd"><div class="crd-body">
-      ${unpaid.map((b,i)=>`<div class="bill-row stagger-item" style="flex-direction:row;align-items:center;animation-delay:${i*0.05}s">
-        <div class="bill-name">${esc(b.name)}${b.dueDate ? `<div class="row-sub">Due ${dueLabel(b.dueDate)}</div>` : ''}</div>
-        <div class="bill-amt num">${fPHP(toPHP(b.amount, b.currency||'PHP'))}</div>
-        <span class="status-pill sp-${b.status.toLowerCase()}">${b.status.toLowerCase()}</span>
-      </div>`).join('')}
-    </div></div>` : `
-    <div class="sec-label">Unpaid bills</div>
-    <div class="crd"><div class="crd-body"><div class="empty-state">
-      <div class="empty-title">You’re all caught up</div>
-      <div class="empty-desc">There are no unpaid bills in this pay period.</div>
-    </div></div></div>`;
+
 }
 function renderIncomeTab(pid) {
   const expectedInc = getIncomePHP(pid);
@@ -3206,8 +3251,8 @@ function renderIncomeTab(pid) {
     </div>`;
   };
 
-  if (recvd.length > 0) { html += `<div class="sec-label">Actual / Received</div>` + recvd.map((s,i) => { del++; return renderItem(s, true, del); }).join(''); }
-  if (proj.length > 0) { html += `<div class="sec-label" style="margin-top:16px">Projected / Expected</div>` + proj.map((s,i) => { del++; return renderItem(s, false, del); }).join(''); }
+  if (recvd.length > 0) { html += `<div class="sec-label">Received</div>` + recvd.map((s,i) => { del++; return renderItem(s, true, del); }).join(''); }
+  if (proj.length > 0) { html += `<div class="sec-label" style="margin-top:16px">Expected</div>` + proj.map((s,i) => { del++; return renderItem(s, false, del); }).join(''); }
   if (srcs.length === 0) { html += `<div class="empty-state stagger-item"><div class="empty-icon">🪹</div><div class="empty-title">No income</div><div class="empty-desc">No income configured. Are we living on prayers? 🙏</div></div>`; }
   html+=`<button class="add-btn-plain glass-panel stagger-item" style="margin-top:12px; animation-delay:${(del+1)*0.05}s" onclick="openIncomeModal()">Edit income sources</button>`;
   document.getElementById('income-body').innerHTML=html;
@@ -3472,7 +3517,7 @@ function renderSpending(pid) {
       <div><h2>Spending by category</h2><p>${getPDef(pid).label} pay period</p></div>
       <button type="button" class="settings-btn" onclick="openSpendingLimits()">Edit limits</button>
     </div>
-    <div class="spending-rows">${rows || '<p class="spending-caption">Your spending will appear here when you log expenses or set limits.</p>'}</div>`;
+    <div class="spending-rows">${rows || '<p class="spending-caption">No spending recorded.</p>'}</div>`;
   for (const id of ['spending-overview', 'spending-expenses','report-limits']) {
     document.getElementById(id).innerHTML = content;
   }
