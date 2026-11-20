@@ -866,6 +866,20 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
 .payoff-marks progress {accent-color:var(--accent);height:8px}
 @media(max-width:400px){.timeline-pay {gap:4px}.timeline-amount b {font-size:12px}.timeline-shift summary{padding:12px 4px}}
 
+.mini-chips,.split-form,.goal-mile summary{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.mini-chips button,.split-form button,.annual-grid button,.annual-item button,.mini-stack button{border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);padding:8px;font:inherit;font-size:12px;cursor:pointer}
+.mini-chips [aria-pressed=true]{background:var(--accent-soft);color:var(--accent-ink)}
+.mini-stack,.split-form label{display:grid;gap:6px}.mini-stack,.split-form,.goal-mile,.annual-item{margin:8px 0}
+.split-form input,.mini-stack input{max-width:100%;min-width:0;padding:7px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px}
+.timeline-shift[open]{display:block;text-align:left}
+#planning-reports,#bill-signals{display:grid;gap:12px;grid-column:1/-1}
+@media(min-width:760px){#planning-reports,#bill-signals{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.compare-row{display:grid;grid-template-columns:62px 1fr auto;align-items:center;gap:8px;margin:12px 0}.compare-row i{height:8px;background:var(--line);border-radius:5px;overflow:hidden}.compare-row i:after{content:'';display:block;width:var(--width);height:100%;background:var(--tone)}
+.annual-grid,.heat-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center;margin:12px 0}.annual-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.annual-grid b{display:block;color:var(--accent-ink)}
+.heat-grid button{background:color-mix(in srgb,var(--accent) var(--heat),var(--bg));border:0;border-radius:5px;min-height:30px;cursor:pointer}
+.forecast summary,.goal-mile summary,.bill-bars button{cursor:pointer}.forecast svg{display:block;width:100%;max-height:100px}.goal-mile i{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle,var(--card) 48%,transparent 50%),conic-gradient(var(--accent) var(--pct),var(--line) 0)}.goal-mile .hit{color:var(--accent-ink);font-weight:750}
+.bill-bars{display:flex;align-items:end;gap:3px}.bill-bars button{background:none;border:0;padding:4px 1px;height:34px;display:flex;align-items:end}.bill-bars i{width:20px;height:var(--h);background:var(--accent);border-radius:3px}
+.annual-grid [aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent)}
 </style>
 </head>
 <body>
@@ -1015,7 +1029,7 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
   </div>
 
   <!-- BILLS TAB -->
-  <div class="tab-pane" id="pane-bills">
+  <div class="tab-pane" id="pane-bills"><div id="bill-signals"></div>
     <div class="filter-strip"><button type="button" id="filter-Upcoming" onclick="selectBillView('Upcoming')">Upcoming</button><button type="button" id="filter-Paid" onclick="selectBillView('Paid')">Paid</button><button type="button" id="filter-Recurring" onclick="selectBillView('Recurring')">Recurring</button></div>
     <div class="crd" id="period-bills-card">
       <div class="crd-head">
@@ -1089,7 +1103,7 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
       <button class="pg-btn" style="flex:1; padding:8px" onclick="setDashDur(6)" id="dur-6m">6 Months</button>
       <button class="pg-btn" style="flex:1; padding:8px" onclick="setDashDur(12)" id="dur-1y">12 Months</button>
     </div>
-    <section id="six-period-report" class="crd feature-card"></section><section id="report-limits" class="crd feature-card"></section><div id="dash-content"></div>
+    <section id="planning-reports"></section><section id="six-period-report" class="crd feature-card"></section><section id="report-limits" class="crd feature-card"></section><div id="dash-content"></div>
   </div>
   <!-- SUPPORT TAB -->
   <div class="tab-pane" id="pane-support">
@@ -1577,12 +1591,13 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
     <form onsubmit="event.preventDefault(); submitExpense()">
     <div class="field"><label for="e-name" class="field-label">Description</label><input class="field-input" id="e-name" placeholder="e.g. Groceries…" oninput="tryAutoCategory(this.value)"></div>
     <div class="field-row">
-      <div class="field" style="flex:2"><label for="e-amt" class="field-label">Amount</label><input class="field-input num" id="e-amt" type="number" inputmode="decimal" step="any" placeholder="0"></div>
-      <div class="field" style="flex:1"><label for="e-cur" class="field-label">Currency</label><select class="field-select" id="e-cur"></select></div>
+      <div class="field" style="flex:2"><label for="e-amt" class="field-label">Amount</label><input class="field-input num" id="e-amt" oninput="previewPurchase()" type="number" inputmode="decimal" step="any" placeholder="0"></div>
+      <div class="field" style="flex:1"><label for="e-cur" class="field-label">Currency</label><select class="field-select" id="e-cur" onchange="previewPurchase()"></select></div>
     </div>
     <div class="field"><label for="e-cat" class="field-label">Category</label>
       <select class="field-select" id="e-cat"></select>
     </div>
+    <label class="field-label" for="e-date">Purchase date</label><input class="field-input" id="e-date" type="date"><div class="mini-chips" id="recent-expenses"></div><p id="purchase-preview" aria-live="polite"></p>
     <p class="expense-error" id="expense-error" role="alert"></p>
     <div class="modal-actions">
       <button class="btn-cancel" type="button" onclick="closeOverlay('exp-ov')">Cancel</button>
@@ -2102,6 +2117,7 @@ function selectCalendarPeriod(id) {
     const index = Number(document.getElementById('bp-idx').value);
     const bill = S.bills[pid]?.[index];
     if (bill && pid !== id && !bill.paidAmt && !bill.extraPayment && !bill.extraApplied) {
+      delete bill.splitAmount;
       S.bills[pid].splice(index, 1);
       (S.bills[id] ||= []).push(bill);
       bill.fundingMode = 'manual';
@@ -2670,7 +2686,7 @@ function getCCPaid(pid) {
     return s;
   }, 0), 0);
 }
-function getAvail(pid) { return getReceivedIncomePHP(pid) + (rolloverMemo[pid]||0) - getBillsTotal(pid) - getExpTotal(pid) - getCCDue(pid); }
+function getAvail(pid) { return splitAdjustment(pid) + getReceivedIncomePHP(pid) + (rolloverMemo[pid]||0) - getBillsTotal(pid) - getExpTotal(pid) - getCCDue(pid); }
 
 function computeRollovers() {
   rolloverMemo = {};
@@ -2868,6 +2884,169 @@ function alternatePayday(pid) {
   return PERIOD_DEFS[periodIndex.get(pid) + (period.half === 15 ? 1 : -1)];
 }
 
+function isoDay(date) {
+  return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+}
+function paydayDate(p) {
+  return isoDay(new Date(p.year,p.month,p.half === 15 ? 15 : new Date(p.year,p.month+1,0).getDate()));
+}
+function spendable(pid) { return getAvail(pid)-getAlloc(pid); }
+function splitShare(b) { return Math.max(0,Math.min(Number(b.amount)||0,Number(b.splitAmount)||0)); }
+function splitAdjustment(pid) {
+  const reserved = id => (S.bills[id]||[]).reduce((sum,b)=>sum+toPHP(splitShare(b),b.currency||'PHP'),0);
+  return reserved(pid)-reserved(alternatePayday(pid).id);
+}
+function splitBill(key, amount) {
+  const e = dueEntries[key];
+  if (!e?.bill || !canShiftPayment(e,alternatePayday(e.pid))) return;
+  const share = Math.round(Number(amount)*100)/100;
+  if (!Number.isFinite(share) || share<0 || share>=e.bill.amount) return;
+  e.bill.splitAmount=share;
+  save();renderAll();
+}
+function fundingPreview(e,target) {
+  const moved = toPHP(e.remaining - (e.bill ? splitShare(e.bill) : 0),e.currency);
+  const first = periodIndex.get(e.pid)<periodIndex.get(target.id);
+  const sourceDelta = S.enableRollover && !first ? 0 : moved;
+  const targetDelta = S.enableRollover && first ? 0 : -moved;
+  return `<div class="mini-stack"><small>After move · available</small><span class="feature-amount">${getPDef(e.pid).shortLabel} <b>${fPHP(spendable(e.pid)+sourceDelta)}</b> · ${target.shortLabel} <b>${fPHP(spendable(target.id)+targetDelta)}</b></span></div>`;
+}
+function splitEditor(e,target) {
+  if(!e.bill || e.bill.category==='debt' || e.bill.amount<=.01) return '';
+  const share=splitShare(e.bill);
+  return `<form class="split-form" onsubmit="event.preventDefault();splitBill(${e.key},this.elements.share.value)"><label>${target.shortLabel} share (${esc(e.currency)}) <input name="share" type="number" required min="0" max="${(e.bill.amount-.01).toFixed(2)}" step=".01" value="${share || (Math.floor(e.bill.amount*50)/100)}"></label><button>Split bill</button>${share ? `<button type="button" onclick="splitBill(${e.key},0)">Undo split</button>` : ''}</form>`;
+}
+let recentChoices=[];
+function startExpenseTools(expense) {
+  const day=document.getElementById('e-date');
+  day.value=expense ? expense.date || '' : isoDay(new Date());
+  const seen=new Set();
+  recentChoices=PERIOD_DEFS.slice(0,periodIndex.get(expensePeriodId)+1).reverse().flatMap(p=>[...(S.expenses[p.id]||[])].reverse()).filter(e=>{
+    const key=JSON.stringify([e.name,e.amount,e.currency||'PHP',e.cat]);
+    if(seen.has(key))return false;
+    seen.add(key);return true;
+  }).slice(0,4);
+  document.getElementById('recent-expenses').innerHTML=expense?'':recentChoices.map((e,i)=>`<button type="button" onclick="repeatExpense(${i})">↻ ${esc(e.name)} <b class="feature-amount">${fAmt(e.amount,e.currency||'PHP')}</b></button>`).join('');
+  previewPurchase();
+}
+function repeatExpense(i) {
+  const e=recentChoices[i];
+  for(const [id,value] of [['name',e.name],['amt',e.amount],['cur',e.currency||'PHP'],['cat',spendingCategoryId(e.cat)]]) document.getElementById('e-'+id).value=value;
+  previewPurchase();
+}
+function previewPurchase() {
+  const before=spendable(expensePeriodId)+(expenseBeingEdited?toPHP(expenseBeingEdited.amount,expenseBeingEdited.currency||'PHP'):0);
+  const cost=toPHP(Number(document.getElementById('e-amt').value)||0,document.getElementById('e-cur').value||'PHP');
+  document.getElementById('purchase-preview').innerHTML=`Available <strong class="feature-amount">${fPHP(before)} → ${fPHP(before-cost)}</strong>`;
+}
+function periodWindow(pid) {
+  const p=getPDef(pid),today=isoDay(new Date());
+  const dates=PERIOD_DEFS.slice(Math.max(0,periodIndex.get(pid)-1),periodIndex.get(pid)+2).map(paydayDate);
+  const start=pid===currentPeriod.id ? today : paydayDate(p);
+  const end=dates.find(d=>d>start);
+  return {start,end,days:end ? Math.round((Date.parse(end)-Date.parse(start))/86400000) : 0};
+}
+function dailyGuide(pid) {
+  const {days}=periodWindow(pid);
+  return days ? `<div class="v-mini"><b class="feature-amount">${fPHP(Math.floor(Math.max(0,spendable(pid))/days*100)/100)}/day</b> · ${days} days</div>` : '';
+}
+function paydayChecklist(pid) {
+  const src=getIncomeSrcs(pid),due=dueEntries.filter(e=>e.pid===pid);
+  const checked=[src.length && src.every(s=>S.incomeReceived[pid]?.[s.id]),due.length && due.every(e=>!e.remaining),getAlloc(pid)>0];
+  return ['Income received','Bills settled','Savings set aside'].map((label,i)=>{
+    const done=S.paydayChecks?.[pid]?.[i] ?? Boolean(checked[i]);
+    return `<button aria-pressed="${done}" onclick="togglePaydayCheck('${pid}',${i},${!done})">${done?'✓':'○'} ${label}</button>`;
+  }).join('');
+}
+function togglePaydayCheck(pid,i,value) {
+  ((S.paydayChecks ||= {})[pid] ||= {})[i]=value;save();renderAll();
+}
+function goalMilestone(total,target,pct) {
+  const mark=[25,50,75,100].find(x=>pct<x)||100;
+  return `<details class="goal-mile"><summary><i style="--pct:${pct}%"></i>${[25,50,75,100].map(x=>`<small class="${pct>=x?'hit':''}">${x}%</small>`).join(' ')}</summary><span class="feature-amount">${pct>=100?'Goal reached':fPHP(Math.max(0,target*mark/100-total))+' to '+mark+'%'}</span></details>`;
+}
+function reportBox(title,body) {return `<section class="crd feature-card"><h2>${title}</h2>${body}</section>`;}
+function comparePaydays(p) {
+  const pair=periodsByYear.get(p.year).slice(p.month*2,p.month*2+2);
+  const max=Math.max(1,...pair.map(x=>Math.abs(spendable(x.id))));
+  return pair.map(x=>`<div class="compare-row"><small>${x.half===15?'15th':'Month-end'}</small><i style="--width:${Math.abs(spendable(x.id))/max*100}%;--tone:${spendable(x.id)<0?'var(--red)':'var(--accent)'}"></i><b class="feature-amount">${fPHP(spendable(x.id))}</b></div>`).join('');
+}
+let heatDays=new Map();
+function spendingHeat(p) {
+  heatDays=new Map();let undated=0;
+  const prefix=paydayDate(p).slice(0,7);
+  for(const [pid,expenses] of Object.entries(S.expenses)) for(const e of expenses) {
+    if(!e.date){if(getPDef(pid)?.year===p.year && getPDef(pid)?.month===p.month)undated++;continue;}
+    if(e.date.startsWith(prefix))heatDays.set(e.date,[...(heatDays.get(e.date)||[]),e]);
+  }
+  const sum=es=>es.reduce((s,e)=>s+toPHP(e.amount,e.currency||'PHP'),0);
+  const max=Math.max(1,...Array.from(heatDays.values(),sum));
+  const count=new Date(p.year,p.month+1,0).getDate();
+  const offset=(new Date(p.year,p.month,1).getDay()+6)%7;
+  return `<div class="heat-grid">${['M','T','W','T','F','S','S'].map(x=>'<small>'+x+'</small>').join('')}${'<i></i>'.repeat(offset)}${Array.from({length:count},(_,i)=>{
+    const date=prefix+'-'+String(i+1).padStart(2,'0'),amount=sum(heatDays.get(date)||[]);
+    return `<button aria-label="${dueLabel(date)}" style="--heat:${amount?20+75*amount/max:0}%;color:${amount/max>.48?'white':'var(--ink)'}" onclick="showDaySpending('${date}')">${i+1}</button>`;
+  }).join('')}</div><div id="day-spending" aria-live="polite"></div>${undated?`<small>${undated} undated</small>`:''}`;
+}
+function showDaySpending(date) {
+  document.getElementById('day-spending').innerHTML='<strong>'+dueLabel(date)+'</strong>'+((heatDays.get(date)||[]).map(e=>`<p>${esc(e.name)} <b class="feature-amount">${fAmt(e.amount,e.currency||'PHP')}</b></p>`).join('')||' · No spending');
+}
+function balanceForecast(pid) {
+  const {start,end}=periodWindow(pid);
+  if(!end)return '<small>Calendar limit reached</small>';
+  const events=dueEntries.filter(e=>e.pid===pid && e.remaining && e.date>=start && e.date<=end);
+  const amount=e=>toPHP(e.remaining,e.currency);
+  let balance=spendable(pid)+events.reduce((s,e)=>s+amount(e),0);
+  const points=[[start,balance]];
+  for(const date of [...new Set(events.map(e=>e.date))]){balance-=events.filter(e=>e.date===date).reduce((s,e)=>s+amount(e),0);points.push([date,balance]);}
+  points.push([end,balance]);
+  const low=points.reduce((a,b)=>a[1]<=b[1]?a:b);
+  const max=Math.max(...points.map(x=>x[1])),min=low[1];
+  const xy=points.map(([d,v])=>[(Date.parse(d)-Date.parse(start))/(Date.parse(end)-Date.parse(start))*280+5,42-(v-min)/(max-min||1)*35]);
+  const path=xy.map(([x,y],i)=>i?'H'+x+'V'+y:'M'+x+' '+y).join(' ');
+  return `<details class="forecast"><summary aria-label="Show forecast low point"><svg viewBox="0 0 290 50" aria-hidden="true"><path d="${path}" stroke="var(--accent)" stroke-width="3" fill="none"/></svg><small>${dueLabel(start)} → ${dueLabel(end)}</small></summary><p>Lowest · ${dueLabel(low[0])} <b class="feature-amount">${fPHP(low[1])}</b></p></details><small>Scheduled payments · before new spending</small>`;
+}
+function billSignals(pid) {
+  const p=getPDef(pid), groups=getBillGroups(false);
+  const history=groups.map(g=>{
+    const past=g.instances.filter(x=>periodIndex.get(x.pid)<=periodIndex.get(pid)).slice(-6);
+    if(past.length<2)return '';
+    const vals=past.map(x=>toPHP(x.orig.amount,x.orig.currency||'PHP')), max=Math.max(1,...vals);
+    const last=vals.at(-1),prior=vals.at(-2);
+    return `<div><b>${esc(g.baseName)}</b> ${prior!==last?`<small class="feature-amount">${fPHP0(prior)} ${last>prior?'↗':'↘'} ${fPHP0(last)}</small>`:''}<div class="bill-bars">${past.map((x,i)=>`<button style="--h:${Math.max(3,vals[i]/max*24)}px" onclick="this.parentNode.nextElementSibling.textContent=this.title" title="${getPDef(x.pid).label} · ${fPHP(vals[i])}"><i></i></button>`).join('')}</div><small class="feature-amount" aria-live="polite"></small></div>`;
+  }).join('');
+  const renew=dueEntries.filter(e=>e.bill?.category==='subscription' && e.date?.startsWith(paydayDate(p).slice(0,7))).map(e=>`<button onclick="openDueEntry(${e.key})"><b>${e.date.slice(-2)}</b> ${esc(e.name)} <small class="feature-amount">${fAmt(e.bill.amount,e.currency)}</small></button>`).join('');
+  return reportBox('Subscription renewals','<div class="mini-chips">'+(renew||'<small>No dated renewals</small>')+'</div>')+reportBox('Bill history',history||'<small>Two payments show a trend</small>');
+}
+function annualPlanner(pid) {
+  const p=getPDef(pid),anchor=pid===currentPeriod.id?isoDay(new Date()):paydayDate(p);
+  const plans=S.annualPlans||[];
+  return `<div class="annual-grid">${monthNames.map((month,i)=>`<button onclick="showAnnualMonth(this,${i})">${month}<b>${plans.filter(x=>Number(x.date.slice(5,7))===i+1).length||'·'}</b></button>`).join('')}</div>`+
+    plans.map((x,i)=>{
+      const [year,m,d]=x.date.split('-').map(Number);
+      let y=Math.max(year,Number(anchor.slice(0,4)));
+      const next=()=>isoDay(new Date(y,m-1,Math.min(d,new Date(y,m,0).getDate())));
+      if(next()<anchor)y++;
+      const due=next(),count=PERIOD_DEFS.filter(pp=>paydayDate(pp)>=anchor && paydayDate(pp)<=due).length;
+      return `<div class="annual-item" data-month="${m-1}"><strong>${esc(x.name)}</strong> · ${due}<br><small class="feature-amount">${fPHP(x.amount)} · ${count?fPHP(Math.ceil(x.amount/count*100)/100)+'/payday':'Due before next payday'}</small> <button aria-label="Remove annual plan" onclick="removeAnnual(${i})">×</button></div>`;
+    }).join('')+`<details><summary>Add annual plan</summary><form class="mini-stack" onsubmit="event.preventDefault();addAnnual(this)"><input name="titleField" aria-label="Plan name" required placeholder="Insurance"><input name="cost" aria-label="Annual amount in pesos" type="number" min=".01" step=".01" required placeholder="₱"><input name="due" aria-label="First annual due date" type="date" required><button>Save plan</button></form></details>`;
+}
+function showAnnualMonth(button,month) {
+  const active=button.getAttribute('aria-pressed')!=='true';
+  button.parentElement.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',active && b===button));
+  document.querySelectorAll('.annual-item').forEach(el=>el.hidden=active && Number(el.dataset.month)!==month);
+}
+function addAnnual(form) {
+  const {titleField,cost,due}=form.elements;
+  if(!titleField.value.trim()||!parseDueDate(due.value)||!(Number(cost.value)>0))return;
+  (S.annualPlans ||= []).push({name:titleField.value.trim(),amount:Number(cost.value),date:due.value});save();renderDashboard();
+}
+function removeAnnual(index) {if(confirm('Remove this annual plan?')){S.annualPlans.splice(index,1);save();renderDashboard();}}
+function planningReports(pid) {
+  const p=getPDef(pid);
+  return reportBox('Available by payday',comparePaydays(p))+reportBox('Balance forecast',balanceForecast(pid))+reportBox('Spending · '+monthNames[p.month],spendingHeat(p))+reportBox('Annual payments',annualPlanner(pid));
+}
+
 function canShiftPayment(entry, target) {
   if (!entry.remaining) return false;
   if (entry.bill) return !Number(entry.bill.paidAmt) && !entry.bill.extraApplied && !entry.bill.extraPayment;
@@ -2885,6 +3064,7 @@ function shiftPayment(key) {
     const bills = S.bills[entry.pid];
     const index = bills.indexOf(entry.bill);
     if (index < 0) return;
+    delete entry.bill.splitAmount;
     bills.splice(index, 1);
     (S.bills[target.id] ||= []).push(entry.bill);
     entry.bill.fundingMode = 'manual';
@@ -2913,10 +3093,11 @@ function paydayTimeline(pid) {
           const label = e.bill && e.bill.category !== 'debt' ? 'Bill' : 'Debt';
           return `<div class="timeline-row"><button class="timeline-pay" id="timeline-pay-${e.key}" onclick="openDueEntry(${e.key})">
             <span class="date-tile" aria-label="${day ? 'Due '+dueLabel(e.date) : 'Due date unset'}"><small>${day ? monthNames[day.month] : 'Due'}</small><b>${day ? day.day : '—'}</b></span>
-            <span class="timeline-name"><strong>${esc(e.name)}</strong><small>${label}</small></span>
+            <span class="timeline-name"><strong>${esc(e.name)}</strong><small>${label}${e.bill && splitShare(e.bill) ? ' · Split' : ''}</small></span>
             <span class="timeline-amount"><b class="feature-amount">${fAmt(e.remaining || (e.bill ? e.bill.amount : installmentAmount(e.inst,e.pid)),e.currency)}</b>${paymentBadge(e.remaining,e.date)}</span></button>
-            ${canShiftPayment(e,target) ? `<details class="timeline-shift"><summary aria-label="Change funding payday for ${esc(e.name)}" title="Change funding payday">⇄</summary><button onclick="shiftPayment(${e.key})">Move to ${target.shortLabel}</button></details>` : ''}</div>`;
-        }).join('') || '<div class="timeline-empty">Nothing due</div>'}</section>`;
+            ${canShiftPayment(e,target) ? `<details class="timeline-shift"><summary aria-label="Change funding payday for ${esc(e.name)}" title="Change funding payday">⇄</summary>${fundingPreview(e,target)}<button onclick="shiftPayment(${e.key})">Move to ${target.shortLabel}</button>${splitEditor(e,target)}</details>` : ''}</div>`;
+        }).join('') || '<div class="timeline-empty">Nothing due</div>'}
+        ${(S.bills[target.id]||[]).filter(b=>splitShare(b)>0).map(b=>`<p class="v-mini">↔ ${esc(b.name)} · <b class="feature-amount">${fAmt(splitShare(b),b.currency||'PHP')}</b> reserved</p>`).join('')}</section>`;
     }).join('');
 }
 
@@ -2979,7 +3160,7 @@ function renderPaydayPlanner(pid) {
   const expenses = getExpTotal(pid);
   const safe = getAvail(pid) - savings;
   const parts = [
-    ['Bills',getBillsTotal(pid)-getBillsTotalByCat(pid,'debt'),'bills','#636584'],
+    ['Bills',getBillsTotal(pid)-getBillsTotalByCat(pid,'debt')-splitAdjustment(pid),'bills','#636584'],
     ['Debt',getBillsTotalByCat(pid,'debt')+getCCDue(pid),'credit','#a28887'],
     ['Expenses',expenses,'expenses','#b4a280'],['Savings',savings,'savings','#8da394'],
     ['Available',Math.max(0,safe),'overview','#5953a5']
@@ -2995,16 +3176,18 @@ function renderPaydayPlanner(pid) {
       <div class="money-value feature-amount ${safe < 0 ? 'short-money' : ''}">${fPHP(Math.abs(safe))}</div>
       <div class="v-mini">${next ? 'Next payday ' + next.label : getPDef(pid).label}</div>
     </div><button type="button" class="ring-control" id="payday-ring" aria-label="Payday breakdown, explore categories" onclick="pickRingSlice(event,this)">${ringChart(parts)}</button></div>
+    ${dailyGuide(pid)}
     <div class="v-legend" aria-label="Payday breakdown">${parts.map(([label,,,color],i) =>
       `<button type="button" data-part="${i}" aria-pressed="${ringActive === i}" onclick="selectRing(${i})"><i style="background:${color}"></i>${label}</button>`).join('')}</div>
     <div class="v-settled"><div><span>Payments settled</span><strong class="feature-amount">${due ? percent+'%' : 'None due'}</strong></div>
       <progress aria-label="Payments settled" max="100" value="${percent}"></progress></div>`;
   refreshDueEntries();
+  document.getElementById("bill-signals").innerHTML=billSignals(pid);
   const cutoff = periodIndex.get(pid);
   const period = getPDef(pid);
   const later = dueEntries.filter(e => periodIndex.get(e.pid) > cutoff &&
     (getPDef(e.pid).month !== period.month || getPDef(e.pid).year !== period.year) && e.remaining > 0).slice(0,3);
-  document.getElementById('home-upcoming').innerHTML = paydayTimeline(pid) +
+  document.getElementById('home-upcoming').innerHTML = paydayTimeline(pid) + '<div class="mini-chips" aria-label="Payday checklist">'+paydayChecklist(pid)+'</div>' +
     (later.length ? '<details class="timeline-future"><summary>Upcoming</summary>' + dueRows(later,'') + '</details>' : '');
 
 }
@@ -3738,7 +3921,7 @@ function renderSavingsTab(pid, avail, alloc) {
           <div style="flex:1"><div class="bank-name">${esc(g.name)}</div></div>
           <div class="bank-input-wrap"><span class="bank-cur">₱</span><input class="bank-input num" type="number" min="0" value="${val||''}" placeholder="0" oninput="updAlloc('${pid}','${g.id}',this.value)"></div>
         </div>
-        ${g.target > 0 ? `<div class="goal-prog-track"><div class="goal-prog-fill" style="width:${pct}%; background:${g.color}; box-shadow: 0 0 10px ${g.color};"></div></div>` : ''}
+        ${g.target>0 ? goalMilestone(total,g.target,pct) : ''}
         <div class="num" style="font-size:11px; font-weight:500; color:var(--ink3); margin-top:2px;">Total: ${fPHP0(total)}${g.target?` / ${fPHP0(g.target)}`:''}</div>
       </div>
     `;
@@ -3847,7 +4030,7 @@ function logReceipt(){
   const pid=S.activeId,checked=RS.items.filter(i=>i.on);
   if(!checked.length){closeOverlay('receipt-ov');return;}
   if(!S.expenses[pid])S.expenses[pid]=[];
-  S.expenses[pid].push({name:RS.store,amount:checked.reduce((s,i)=>s+i.price,0),cat:RS.cat,receiptStore:RS.store,items:checked.map(i=>({name:i.name,price:i.price})),_show:false});
+  S.expenses[pid].push({date:parseDueDate(RS.date)?RS.date:isoDay(new Date()),name:RS.store,amount:checked.reduce((s,i)=>s+i.price,0),cat:RS.cat,receiptStore:RS.store,items:checked.map(i=>({name:i.name,price:i.price})),_show:false});
   save();closeOverlay('receipt-ov');renderAll();
 }
 
@@ -3943,6 +4126,7 @@ function openExpModal(index) {
   document.getElementById('expense-period').textContent = getPDef(expensePeriodId).label + ' pay period';
   document.getElementById('expense-error').textContent = '';
   document.getElementById('app-status').textContent = '';
+  startExpenseTools(expense);
   openOverlay('exp-ov');
   document.getElementById('e-name').focus();
 }
@@ -3964,7 +4148,7 @@ function submitExpense() {
   }
   const expenses = S.expenses[expensePeriodId] ||= [];
   const fields = {
-    name, amount,
+    name, amount, date:document.getElementById('e-date').value,
     currency: document.getElementById('e-cur').value,
     cat: document.getElementById('e-cat').value
   };
@@ -4298,7 +4482,7 @@ function saveEditBillGroup() {
     alert('Keep the dates and funding periods of payments that have already been recorded.');
     return;
   }
-  const oldStates = currentEditGroup.instances.map(i => ({ paidAmt: i.orig.paidAmt, status: i.orig.status }));
+  const oldStates = currentEditGroup.instances.map(i => ({ paidAmt: i.orig.paidAmt, status: i.orig.status, split:splitShare(i.orig) }));
   const seriesId = currentEditGroup.seriesId || makePaymentSeriesId();
   removeManagedGroup(currentEditGroup);
   periods.forEach((p, c) => {
@@ -4314,7 +4498,7 @@ function saveEditBillGroup() {
       stat = 'PAID'; pAmt = amt;
     }
     
-    S.bills[p.id].push({ name: newName + suf, amount: amt, currency: cur, autoPay: autoPay, notes: notes, category: cat, paidAmt: pAmt, status: stat, custom: true, seriesId, frequency:freq, dueDate:p.dueDate, fundingMode:mode });
+    S.bills[p.id].push({ name: newName + suf, amount: amt, splitAmount:cat === "debt" ? 0 : Math.min(oldStates[c]?.split || 0,amt), currency: cur, autoPay: autoPay, notes: notes, category: cat, paidAmt: pAmt, status: stat, custom: true, seriesId, frequency:freq, dueDate:p.dueDate, fundingMode:mode });
   });
   
   save(); renderAll(); openAllBillsOverview(cat === 'debt'); closeOverlay('eb-ov');
@@ -4338,6 +4522,7 @@ function setDashDur(m) {
 function getDashPeriods() { const idx=periodIndex.get(S.activeId); return PERIOD_DEFS.slice(idx, idx+(dashDur*2)); }
 
 function renderDashboard() {
+  document.getElementById('planning-reports').innerHTML=planningReports(S.activeId);
   document.getElementById('six-period-report').innerHTML = sixPeriodChart(S.activeId);
   renderSpending(S.activeId);
   const periods = getDashPeriods();
