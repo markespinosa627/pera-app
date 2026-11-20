@@ -794,7 +794,7 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
 .v-settled {padding:0 16px 14px}
 .v-settled div {display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--ink3)}
 .v-settled progress {width:100%;height:7px;accent-color:var(--accent);display:block;margin-top:5px}
-#home-shortcuts {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#home-shortcuts {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 #home-shortcuts button {display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 5px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;font-size:13px;font-weight:650;cursor:pointer}
 #home-shortcuts button:first-child {background:var(--accent);border-color:var(--accent);color:#fff}
 #home-shortcuts b {font-size:17px;font-weight:500}
@@ -815,7 +815,7 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
  #pane-overview #ov-grid {grid-template-columns:repeat(5,minmax(0,1fr));grid-column:1/-1}
  #pane-overview .ov-card:last-child:nth-child(odd) {grid-column:auto}
  #payday-planner {grid-column:1/-1}
- #home-shortcuts {grid-column:1/-1}
+ #home-shortcuts {grid-column:1/-1;grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media(min-width:1180px){
  #pane-overview.active {grid-template-columns:repeat(12,minmax(0,1fr))}
@@ -982,6 +982,7 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
     <div id="home-shortcuts" aria-label="Quick actions">
       <button onclick="openExpModal()"><b aria-hidden="true">＋</b>Expense</button>
       <button onclick="openDebtModal()"><b aria-hidden="true">＋</b>Bill</button>
+      <button onclick="openDebtModal(true)"><b aria-hidden="true">＋</b>Debt</button>
       <button onclick="openIncomeModal()"><b aria-hidden="true">↙</b>Income</button>
     </div>
     <div class="ov-grid" id="ov-grid"></div>
