@@ -1329,6 +1329,7 @@ body[data-banknote="1000"] .ring-control::after {
 body.dark {
   --night-card:color-mix(in srgb,var(--card) 62%,#070b14);
   --frost:color-mix(in srgb,var(--night-card) 92%,transparent);
+  --frost-nav:color-mix(in srgb,var(--night-card) 92%,transparent);
   --frost-shadow:0 9px 26px #020b184f;
   --frost-lift:0 14px 32px #020b186e;
 }
@@ -1411,7 +1412,7 @@ body.dark .payday-group.is-selected h3 {
   background:linear-gradient(120deg,var(--night-card),color-mix(in srgb,var(--payday-header) 38%,var(--night-card)));
 }
 @media(prefers-reduced-transparency:reduce) {
-  body.dark {--frost:var(--night-card)}
+  body.dark {--frost:var(--night-card);--frost-nav:var(--night-card)}
   body.dark[data-banknote] #payday-planner::before {display:none}
 }
 </style>
