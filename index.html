@@ -1205,65 +1205,126 @@ body {
   body {background:var(--bg-color)}
   .nav-drawer,.mobile-nav {background:var(--card);border:1px solid var(--line)}
 }
-/* Quiet surfaces let the balance and payment dates lead. */
-:root {
-  --bg-color:#edf5fa;
-  --card:#fbfdff;
-  --glass:#f4faffdf;
-  --glass-strong:#f8fcfff2;
-  --line:#d4e4ed;
-  --glass-edge:#d4e4ed;
-  --glass-shadow:0 2px 12px #123a5608;
+
+.banknote-picker {border:1px solid var(--line);border-radius:var(--rs);margin:0 0 10px;padding:10px;min-inline-size:0}
+.banknote-picker legend {padding:0 5px;font-weight:700;color:var(--ink)}
+.banknote-options {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.banknote-option {position:relative;display:block;min-width:0;cursor:pointer}
+.banknote-option input {position:absolute;top:8px;right:8px;accent-color:var(--accent)}
+.banknote-option span {display:grid;gap:2px;min-height:64px;padding:8px 28px 8px 8px;border:1px solid var(--line);border-radius:10px;background:linear-gradient(120deg,var(--card), color-mix(in srgb,var(--swatch) 20%,var(--card)));color:var(--ink)}
+.banknote-option small {font-size:10px;color:var(--ink3)}
+.banknote-option input:checked + span {border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.banknote-option input:focus-visible + span {outline:2px solid var(--accent);outline-offset:2px}
+#payday-planner .note-bars {position:absolute;right:12px;top:15px;display:grid;gap:3px;pointer-events:none;color:var(--note-blue);opacity:.6}
+.note-bars i {width:10px;height:3px;border-block:1px solid currentColor}
+body[data-banknote]:not([data-banknote="1000"]) #payday-planner::before {
+  background:linear-gradient(90deg,var(--card) 2%,transparent 62%),var(--banknote-scene) right bottom / auto 100% no-repeat;
+  opacity:.82;
 }
-body.dark {
-  --bg-color:#122a3e;
-  --card:#172f44;
-  --glass:#18354ce8;
-  --glass-strong:#163147f2;
-  --line:#36566c;
-  --glass-edge:#36566c;
-  --glass-shadow:0 2px 12px #07182926;
+body.dark[data-banknote]:not([data-banknote="1000"]) #payday-planner::before {
+  background:linear-gradient(90deg,var(--card) 2%,transparent 62%),var(--banknote-scene-dark) right bottom / auto 100% no-repeat;
+  opacity:.57;
 }
-body {background:var(--bg-color)}
-.nav-drawer,.mobile-nav {
-  background:var(--glass-strong);border:1px solid var(--line);box-shadow:var(--glass-shadow)
+@media(prefers-reduced-transparency:reduce){
+  body[data-banknote]:not([data-banknote="1000"]) #payday-planner::before {display:none}
 }
-.brand-mark {background:var(--accent);box-shadow:none}
-.topnav {border-bottom:0}
-.workspace-head h1 {font-size:clamp(28px,3.5vw,42px)}
-.crd,.ov-card,.ds-card,#home-upcoming,#ov-income-preview,#home-shortcuts,.period-nav {box-shadow:none;border-color:var(--line)}
-#overview-lead summary {background:none;border:0;padding-inline:0}
-#payday-planner {border:1px solid var(--line);border-radius:24px;box-shadow:none}
-#payday-planner::before {
-  background-image:linear-gradient(95deg,#f8fcff 8%,#e9f4fbd9 35%,#dcebf68a 62%,#d3e9f33b),var(--engraving)
+
+body[data-banknote="500"] {
+  --note-blue:#785514;--accent:#785514;--accent-ink:#785514;--ink:color-mix(in srgb,#785514 64%,#151320);
+  --ink2:#785514;--ink3:color-mix(in srgb,#785514 83%,#222031);
+  --bg-color:#fff5d7;--bg:#fff5d7;--card:#fffefe;--card-hover:#fff5d7;--accent-soft:#fff5d7;
+  --line:color-mix(in srgb,#e2b64b 40%,white);--line2:color-mix(in srgb,#e2b64b 67%,white);
+  --note-wash:#fff5d7;--note-line:#78551443;--glass:#fff5d7d9;--glass-strong:#fffc;
+  --glass-edge:#fff;--glass-tint:#e2b64b42;--glass-line:#78551438;
+  --glass-wall:linear-gradient(135deg,#fff5d7,#fbefd0);--paper-nav:#fbefd0e0;
+  --paper-ink:#78551422;--paper-weave:#7855141a;--glass-hero:linear-gradient(110deg,#fff,#fbefd0);
+  --hero-grad:linear-gradient(135deg,#342715,#785514);--payday-header:#785514;--payday-header-dark:#342715;
+  --forecast-ink:#785514;--ring-available:#342715;--ring-bills:#785514;--ring-expense:#e2b64b;--ring-debt:color-mix(in srgb,#785514 72%,#5d5279);
+  --ring-savings:color-mix(in srgb,#e2b64b 58%,white);--ring-income:color-mix(in srgb,#785514 78%,#618087);
+  --blue:#785514;--teal:#785514;--purp:#785514;--banknote-scene:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20480%20225%22%3E%3Cdefs%3E%3Cpattern%20id%3D%22h%22%20width%3D%225%22%20height%3D%225%22%20patternUnits%3D%22userSpaceOnUse%22%20patternTransform%3D%22rotate%2832%29%22%3E%3Cpath%20d%3D%22M0%200v5%22%20stroke%3D%22%23785514%22%20stroke-opacity%3D%22.32%22%2F%3E%3C%2Fpattern%3E%3C%2Fdefs%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23785514%22%20stroke-width%3D%22.75%22%20opacity%3D%22.37%22%3E%3Cpath%20d%3D%22M0%20145Q150%20159%20258%20145T480%20145%22%2F%3E%3Cpath%20d%3D%22M0%20150Q150%20164%20258%20150T480%20150%22%2F%3E%3Cpath%20d%3D%22M0%20155Q150%20169%20258%20155T480%20155%22%2F%3E%3Cpath%20d%3D%22M0%20160Q150%20174%20258%20160T480%20160%22%2F%3E%3Cpath%20d%3D%22M0%20165Q150%20179%20258%20165T480%20165%22%2F%3E%3Cpath%20d%3D%22M0%20170Q150%20184%20258%20170T480%20170%22%2F%3E%3Cpath%20d%3D%22M0%20175Q150%20189%20258%20175T480%20175%22%2F%3E%3Cpath%20d%3D%22M0%20180Q150%20194%20258%20180T480%20180%22%2F%3E%3Cpath%20d%3D%22M0%20185Q150%20199%20258%20185T480%20185%22%2F%3E%3Cpath%20d%3D%22M0%20190Q150%20204%20258%20190T480%20190%22%2F%3E%3Cpath%20d%3D%22M0%20195Q150%20209%20258%20195T480%20195%22%2F%3E%3Cpath%20d%3D%22M0%20200Q150%20214%20258%20200T480%20200%22%2F%3E%3Cpath%20d%3D%22M0%20205Q150%20219%20258%20205T480%20205%22%2F%3E%3Cpath%20d%3D%22M0%20210Q150%20224%20258%20210T480%20210%22%2F%3E%3Cpath%20d%3D%22M0%20215Q150%20229%20258%20215T480%20215%22%2F%3E%3Cpath%20d%3D%22M0%20220Q150%20234%20258%20220T480%20220%22%2F%3E%3Cpath%20d%3D%22M155%2013Q285%20-25%20480%20-5%22%2F%3E%3Cpath%20d%3D%22M155%2022Q285%20-16%20480%204%22%2F%3E%3Cpath%20d%3D%22M155%2031Q285%20-7%20480%2013%22%2F%3E%3Cpath%20d%3D%22M155%2040Q285%202%20480%2022%22%2F%3E%3Cpath%20d%3D%22M155%2049Q285%2011%20480%2031%22%2F%3E%3Cpath%20d%3D%22M155%2058Q285%2020%20480%2040%22%2F%3E%3Cpath%20d%3D%22M155%2067Q285%2029%20480%2049%22%2F%3E%3Cpath%20d%3D%22M155%2076Q285%2038%20480%2058%22%2F%3E%3Cpath%20d%3D%22M155%2085Q285%2047%20480%2067%22%2F%3E%3Cpath%20d%3D%22M155%2094Q285%2056%20480%2076%22%2F%3E%3Cpath%20d%3D%22M155%20103Q285%2065%20480%2085%22%2F%3E%3Cpath%20d%3D%22M155%20112Q285%2074%20480%2094%22%2F%3E%3Cpath%20d%3D%22M155%20121Q285%2083%20480%20103%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22url%28%23h%29%22%20stroke%3D%22%23785514%22%20stroke-width%3D%221.25%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M190%20187Q233%20175%20245%20115Q258%2051%20321%2043Q361%2034%20402%2065Q425%2079%20441%2031L480%200V187Z%20M246%20186Q262%20117%20309%20113Q353%20109%20381%20185%22%2F%3E%3Cpath%20d%3D%22M325%20102q18-29%2040-17q14%206%2013%2021l15%205-14%205q-3%2023-32%2034l-20%2025%208-29q-19-10-10-44z%20M337%20119q12-9%2029-9q-1%2018-27%2029%20M369%20101h1%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%23785514%22%20opacity%3D%22.55%22%3E%3Cpath%20d%3D%22M458%2029h10m-10%202h10%22%2F%3E%3Cpath%20d%3D%22M458%2036h10m-10%202h10%22%2F%3E%3Cpath%20d%3D%22M458%2043h10m-10%202h10%22%2F%3E%3Cpath%20d%3D%22M458%2050h10m-10%202h10%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  --banknote-scene-dark:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20480%20225%22%3E%3Cdefs%3E%3Cpattern%20id%3D%22h%22%20width%3D%225%22%20height%3D%225%22%20patternUnits%3D%22userSpaceOnUse%22%20patternTransform%3D%22rotate%2832%29%22%3E%3Cpath%20d%3D%22M0%200v5%22%20stroke%3D%22%23eed18a%22%20stroke-opacity%3D%22.32%22%2F%3E%3C%2Fpattern%3E%3C%2Fdefs%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23eed18a%22%20stroke-width%3D%22.75%22%20opacity%3D%22.37%22%3E%3Cpath%20d%3D%22M0%20145Q150%20159%20258%20145T480%20145%22%2F%3E%3Cpath%20d%3D%22M0%20150Q150%20164%20258%20150T480%20150%22%2F%3E%3Cpath%20d%3D%22M0%20155Q150%20169%20258%20155T480%20155%22%2F%3E%3Cpath%20d%3D%22M0%20160Q150%20174%20258%20160T480%20160%22%2F%3E%3Cpath%20d%3D%22M0%20165Q150%20179%20258%20165T480%20165%22%2F%3E%3Cpath%20d%3D%22M0%20170Q150%20184%20258%20170T480%20170%22%2F%3E%3Cpath%20d%3D%22M0%20175Q150%20189%20258%20175T480%20175%22%2F%3E%3Cpath%20d%3D%22M0%20180Q150%20194%20258%20180T480%20180%22%2F%3E%3Cpath%20d%3D%22M0%20185Q150%20199%20258%20185T480%20185%22%2F%3E%3Cpath%20d%3D%22M0%20190Q150%20204%20258%20190T480%20190%22%2F%3E%3Cpath%20d%3D%22M0%20195Q150%20209%20258%20195T480%20195%22%2F%3E%3Cpath%20d%3D%22M0%20200Q150%20214%20258%20200T480%20200%22%2F%3E%3Cpath%20d%3D%22M0%20205Q150%20219%20258%20205T480%20205%22%2F%3E%3Cpath%20d%3D%22M0%20210Q150%20224%20258%20210T480%20210%22%2F%3E%3Cpath%20d%3D%22M0%20215Q150%20229%20258%20215T480%20215%22%2F%3E%3Cpath%20d%3D%22M0%20220Q150%20234%20258%20220T480%20220%22%2F%3E%3Cpath%20d%3D%22M155%2013Q285%20-25%20480%20-5%22%2F%3E%3Cpath%20d%3D%22M155%2022Q285%20-16%20480%204%22%2F%3E%3Cpath%20d%3D%22M155%2031Q285%20-7%20480%2013%22%2F%3E%3Cpath%20d%3D%22M155%2040Q285%202%20480%2022%22%2F%3E%3Cpath%20d%3D%22M155%2049Q285%2011%20480%2031%22%2F%3E%3Cpath%20d%3D%22M155%2058Q285%2020%20480%2040%22%2F%3E%3Cpath%20d%3D%22M155%2067Q285%2029%20480%2049%22%2F%3E%3Cpath%20d%3D%22M155%2076Q285%2038%20480%2058%22%2F%3E%3Cpath%20d%3D%22M155%2085Q285%2047%20480%2067%22%2F%3E%3Cpath%20d%3D%22M155%2094Q285%2056%20480%2076%22%2F%3E%3Cpath%20d%3D%22M155%20103Q285%2065%20480%2085%22%2F%3E%3Cpath%20d%3D%22M155%20112Q285%2074%20480%2094%22%2F%3E%3Cpath%20d%3D%22M155%20121Q285%2083%20480%20103%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22url%28%23h%29%22%20stroke%3D%22%23eed18a%22%20stroke-width%3D%221.25%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M190%20187Q233%20175%20245%20115Q258%2051%20321%2043Q361%2034%20402%2065Q425%2079%20441%2031L480%200V187Z%20M246%20186Q262%20117%20309%20113Q353%20109%20381%20185%22%2F%3E%3Cpath%20d%3D%22M325%20102q18-29%2040-17q14%206%2013%2021l15%205-14%205q-3%2023-32%2034l-20%2025%208-29q-19-10-10-44z%20M337%20119q12-9%2029-9q-1%2018-27%2029%20M369%20101h1%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%23eed18a%22%20opacity%3D%22.55%22%3E%3Cpath%20d%3D%22M458%2029h10m-10%202h10%22%2F%3E%3Cpath%20d%3D%22M458%2036h10m-10%202h10%22%2F%3E%3Cpath%20d%3D%22M458%2043h10m-10%202h10%22%2F%3E%3Cpath%20d%3D%22M458%2050h10m-10%202h10%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 }
-#payday-planner::after,.ring-engraving,.ring-control::before {display:none}
-.ring-control {box-shadow:none}
-.v-legend,.v-settled {background:var(--glass-strong)}
-#home-shortcuts {background:var(--card);padding:5px}
-#home-shortcuts button,#home-shortcuts button:first-child {flex-direction:row;gap:7px}
-#home-shortcuts b,#home-shortcuts button:first-child b {
-  width:20px;height:20px;border:0;box-shadow:none;background:none;color:var(--accent-ink)
+body.dark[data-banknote="500"] {
+  --ink:#fff7fb;--ink2:#eed18a;--ink3:color-mix(in srgb,#eed18a 46%,white);
+  --accent:#785514;--accent-ink:#eed18a;--note-blue:#eed18a;--note-wash:#342715;--note-line:#eed18a49;
+  --bg-color:#342715;--bg:#342715;--card:#342715;--card-hover:color-mix(in srgb,#342715 74%,#785514);
+  --accent-soft:color-mix(in srgb,#342715 62%,#785514);
+  --line:#eed18a44;--line2:#eed18a68;--glass:#342715e0;--glass-strong:#342715f5;
+  --glass-edge:#eed18a46;--glass-tint:#eed18a37;--glass-line:#eed18a43;
+  --glass-wall:linear-gradient(135deg,#342715,#151520);--paper-nav:#342715;
+  --paper-ink:#eed18a22;--paper-weave:#eed18a1a;--glass-hero:linear-gradient(110deg,#342715,#785514);
+  --forecast-ink:#eed18a;--ring-available:#fff0ff;--ring-bills:#eed18a;--ring-expense:#e2b64b;
+  --ring-debt:color-mix(in srgb,#eed18a 76%,#9baee3);--ring-savings:#785514;--ring-income:color-mix(in srgb,#eed18a 68%,#afd3da);
+  --blue:#eed18a;--teal:#eed18a;--purp:#eed18a;
 }
-#pane-overview .ov-card {min-height:82px;border-radius:16px}
-#pane-overview .ov-card .metric-glyph {
-  width:19px;height:19px;background:none;border:0;box-shadow:none;color:var(--accent-ink)
+
+body[data-banknote="100"] {
+  --note-blue:#4d478b;--accent:#4d478b;--accent-ink:#4d478b;--ink:color-mix(in srgb,#4d478b 64%,#151320);
+  --ink2:#4d478b;--ink3:color-mix(in srgb,#4d478b 83%,#222031);
+  --bg-color:#eeebff;--bg:#eeebff;--card:#fffefe;--card-hover:#eeebff;--accent-soft:#eeebff;
+  --line:color-mix(in srgb,#9486d5 40%,white);--line2:color-mix(in srgb,#9486d5 67%,white);
+  --note-wash:#eeebff;--note-line:#4d478b43;--glass:#eeebffd9;--glass-strong:#fffc;
+  --glass-edge:#fff;--glass-tint:#9486d542;--glass-line:#4d478b38;
+  --glass-wall:linear-gradient(135deg,#eeebff,#e5e1fa);--paper-nav:#e5e1fae0;
+  --paper-ink:#4d478b22;--paper-weave:#4d478b1a;--glass-hero:linear-gradient(110deg,#fff,#e5e1fa);
+  --hero-grad:linear-gradient(135deg,#231f41,#4d478b);--payday-header:#4d478b;--payday-header-dark:#231f41;
+  --forecast-ink:#4d478b;--ring-available:#231f41;--ring-bills:#4d478b;--ring-expense:#9486d5;--ring-debt:color-mix(in srgb,#4d478b 72%,#5d5279);
+  --ring-savings:color-mix(in srgb,#9486d5 58%,white);--ring-income:color-mix(in srgb,#4d478b 78%,#618087);
+  --blue:#4d478b;--teal:#4d478b;--purp:#4d478b;--banknote-scene:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20480%20225%22%3E%3Cdefs%3E%3Cpattern%20id%3D%22h%22%20width%3D%225%22%20height%3D%225%22%20patternUnits%3D%22userSpaceOnUse%22%20patternTransform%3D%22rotate%2832%29%22%3E%3Cpath%20d%3D%22M0%200v5%22%20stroke%3D%22%234d478b%22%20stroke-opacity%3D%22.32%22%2F%3E%3C%2Fpattern%3E%3C%2Fdefs%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%234d478b%22%20stroke-width%3D%22.75%22%20opacity%3D%22.37%22%3E%3Cpath%20d%3D%22M0%20145Q150%20159%20258%20145T480%20145%22%2F%3E%3Cpath%20d%3D%22M0%20150Q150%20164%20258%20150T480%20150%22%2F%3E%3Cpath%20d%3D%22M0%20155Q150%20169%20258%20155T480%20155%22%2F%3E%3Cpath%20d%3D%22M0%20160Q150%20174%20258%20160T480%20160%22%2F%3E%3Cpath%20d%3D%22M0%20165Q150%20179%20258%20165T480%20165%22%2F%3E%3Cpath%20d%3D%22M0%20170Q150%20184%20258%20170T480%20170%22%2F%3E%3Cpath%20d%3D%22M0%20175Q150%20189%20258%20175T480%20175%22%2F%3E%3Cpath%20d%3D%22M0%20180Q150%20194%20258%20180T480%20180%22%2F%3E%3Cpath%20d%3D%22M0%20185Q150%20199%20258%20185T480%20185%22%2F%3E%3Cpath%20d%3D%22M0%20190Q150%20204%20258%20190T480%20190%22%2F%3E%3Cpath%20d%3D%22M0%20195Q150%20209%20258%20195T480%20195%22%2F%3E%3Cpath%20d%3D%22M0%20200Q150%20214%20258%20200T480%20200%22%2F%3E%3Cpath%20d%3D%22M0%20205Q150%20219%20258%20205T480%20205%22%2F%3E%3Cpath%20d%3D%22M0%20210Q150%20224%20258%20210T480%20210%22%2F%3E%3Cpath%20d%3D%22M0%20215Q150%20229%20258%20215T480%20215%22%2F%3E%3Cpath%20d%3D%22M0%20220Q150%20234%20258%20220T480%20220%22%2F%3E%3Cpath%20d%3D%22M155%2013Q285%20-25%20480%20-5%22%2F%3E%3Cpath%20d%3D%22M155%2022Q285%20-16%20480%204%22%2F%3E%3Cpath%20d%3D%22M155%2031Q285%20-7%20480%2013%22%2F%3E%3Cpath%20d%3D%22M155%2040Q285%202%20480%2022%22%2F%3E%3Cpath%20d%3D%22M155%2049Q285%2011%20480%2031%22%2F%3E%3Cpath%20d%3D%22M155%2058Q285%2020%20480%2040%22%2F%3E%3Cpath%20d%3D%22M155%2067Q285%2029%20480%2049%22%2F%3E%3Cpath%20d%3D%22M155%2076Q285%2038%20480%2058%22%2F%3E%3Cpath%20d%3D%22M155%2085Q285%2047%20480%2067%22%2F%3E%3Cpath%20d%3D%22M155%2094Q285%2056%20480%2076%22%2F%3E%3Cpath%20d%3D%22M155%20103Q285%2065%20480%2085%22%2F%3E%3Cpath%20d%3D%22M155%20112Q285%2074%20480%2094%22%2F%3E%3Cpath%20d%3D%22M155%20121Q285%2083%20480%20103%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22url%28%23h%29%22%20stroke%3D%22%234d478b%22%20stroke-width%3D%221.25%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M168%20184Q245%20147%20315%2045Q322%2033%20329%2047Q376%20122%20477%20183%20M218%20178Q282%20119%20321%2048%20M393%20160Q361%20123%20327%2052%22%2F%3E%3Cpath%20d%3D%22M248%20181q39-17%2088-12l32-17-12%2022%2020%2017-34-6q-62%2022-94-4z%20M272%20177l1%201m12-3%201%201m12-2%201%201m12-1%201%201%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%234d478b%22%20opacity%3D%22.55%22%3E%3Cpath%20d%3D%22M458%2029h10m-10%202h10%22%2F%3E%3Cpath%20d%3D%22M458%2036h10m-10%202h10%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  --banknote-scene-dark:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20480%20225%22%3E%3Cdefs%3E%3Cpattern%20id%3D%22h%22%20width%3D%225%22%20height%3D%225%22%20patternUnits%3D%22userSpaceOnUse%22%20patternTransform%3D%22rotate%2832%29%22%3E%3Cpath%20d%3D%22M0%200v5%22%20stroke%3D%22%23bcafea%22%20stroke-opacity%3D%22.32%22%2F%3E%3C%2Fpattern%3E%3C%2Fdefs%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23bcafea%22%20stroke-width%3D%22.75%22%20opacity%3D%22.37%22%3E%3Cpath%20d%3D%22M0%20145Q150%20159%20258%20145T480%20145%22%2F%3E%3Cpath%20d%3D%22M0%20150Q150%20164%20258%20150T480%20150%22%2F%3E%3Cpath%20d%3D%22M0%20155Q150%20169%20258%20155T480%20155%22%2F%3E%3Cpath%20d%3D%22M0%20160Q150%20174%20258%20160T480%20160%22%2F%3E%3Cpath%20d%3D%22M0%20165Q150%20179%20258%20165T480%20165%22%2F%3E%3Cpath%20d%3D%22M0%20170Q150%20184%20258%20170T480%20170%22%2F%3E%3Cpath%20d%3D%22M0%20175Q150%20189%20258%20175T480%20175%22%2F%3E%3Cpath%20d%3D%22M0%20180Q150%20194%20258%20180T480%20180%22%2F%3E%3Cpath%20d%3D%22M0%20185Q150%20199%20258%20185T480%20185%22%2F%3E%3Cpath%20d%3D%22M0%20190Q150%20204%20258%20190T480%20190%22%2F%3E%3Cpath%20d%3D%22M0%20195Q150%20209%20258%20195T480%20195%22%2F%3E%3Cpath%20d%3D%22M0%20200Q150%20214%20258%20200T480%20200%22%2F%3E%3Cpath%20d%3D%22M0%20205Q150%20219%20258%20205T480%20205%22%2F%3E%3Cpath%20d%3D%22M0%20210Q150%20224%20258%20210T480%20210%22%2F%3E%3Cpath%20d%3D%22M0%20215Q150%20229%20258%20215T480%20215%22%2F%3E%3Cpath%20d%3D%22M0%20220Q150%20234%20258%20220T480%20220%22%2F%3E%3Cpath%20d%3D%22M155%2013Q285%20-25%20480%20-5%22%2F%3E%3Cpath%20d%3D%22M155%2022Q285%20-16%20480%204%22%2F%3E%3Cpath%20d%3D%22M155%2031Q285%20-7%20480%2013%22%2F%3E%3Cpath%20d%3D%22M155%2040Q285%202%20480%2022%22%2F%3E%3Cpath%20d%3D%22M155%2049Q285%2011%20480%2031%22%2F%3E%3Cpath%20d%3D%22M155%2058Q285%2020%20480%2040%22%2F%3E%3Cpath%20d%3D%22M155%2067Q285%2029%20480%2049%22%2F%3E%3Cpath%20d%3D%22M155%2076Q285%2038%20480%2058%22%2F%3E%3Cpath%20d%3D%22M155%2085Q285%2047%20480%2067%22%2F%3E%3Cpath%20d%3D%22M155%2094Q285%2056%20480%2076%22%2F%3E%3Cpath%20d%3D%22M155%20103Q285%2065%20480%2085%22%2F%3E%3Cpath%20d%3D%22M155%20112Q285%2074%20480%2094%22%2F%3E%3Cpath%20d%3D%22M155%20121Q285%2083%20480%20103%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22url%28%23h%29%22%20stroke%3D%22%23bcafea%22%20stroke-width%3D%221.25%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M168%20184Q245%20147%20315%2045Q322%2033%20329%2047Q376%20122%20477%20183%20M218%20178Q282%20119%20321%2048%20M393%20160Q361%20123%20327%2052%22%2F%3E%3Cpath%20d%3D%22M248%20181q39-17%2088-12l32-17-12%2022%2020%2017-34-6q-62%2022-94-4z%20M272%20177l1%201m12-3%201%201m12-2%201%201m12-1%201%201%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%23bcafea%22%20opacity%3D%22.55%22%3E%3Cpath%20d%3D%22M458%2029h10m-10%202h10%22%2F%3E%3Cpath%20d%3D%22M458%2036h10m-10%202h10%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 }
-#pane-overview .ov-card .sparkline {opacity:.24}
-.payday-group {border-color:var(--line);border-radius:14px}
-.payday-group h3 {min-height:56px;background:var(--bg);color:var(--ink);border-color:var(--line)}
-.payday-group h3 small {color:var(--ink3)}
-.payday-group.is-selected {border-color:var(--accent);box-shadow:none}
-.payday-group.is-selected h3 {background:var(--accent-soft)}
-.date-tile,.payment-state {background:none;border:0}
-.payday-group .date-tile small {background:none;color:var(--ink3)}
-.spending-row,.row-item,.goal-row,.bill-row,.cc-card {background:var(--card)}
-.spending-row {border:0;padding-inline:0;border-radius:0}
-.payday-checklist {margin-top:12px}
-.payday-checklist summary {width:fit-content;color:var(--ink2);font-size:13px;cursor:pointer}
-@media(min-width:1180px) {
-  #home-shortcuts {align-content:stretch}
-  #home-shortcuts button {min-height:48px}
+body.dark[data-banknote="100"] {
+  --ink:#fff7fb;--ink2:#bcafea;--ink3:color-mix(in srgb,#bcafea 46%,white);
+  --accent:#4d478b;--accent-ink:#bcafea;--note-blue:#bcafea;--note-wash:#231f41;--note-line:#bcafea49;
+  --bg-color:#231f41;--bg:#231f41;--card:#231f41;--card-hover:color-mix(in srgb,#231f41 74%,#4d478b);
+  --accent-soft:color-mix(in srgb,#231f41 62%,#4d478b);
+  --line:#bcafea44;--line2:#bcafea68;--glass:#231f41e0;--glass-strong:#231f41f5;
+  --glass-edge:#bcafea46;--glass-tint:#bcafea37;--glass-line:#bcafea43;
+  --glass-wall:linear-gradient(135deg,#231f41,#151520);--paper-nav:#231f41;
+  --paper-ink:#bcafea22;--paper-weave:#bcafea1a;--glass-hero:linear-gradient(110deg,#231f41,#4d478b);
+  --forecast-ink:#bcafea;--ring-available:#fff0ff;--ring-bills:#bcafea;--ring-expense:#9486d5;
+  --ring-debt:color-mix(in srgb,#bcafea 76%,#9baee3);--ring-savings:#4d478b;--ring-income:color-mix(in srgb,#bcafea 68%,#afd3da);
+  --blue:#bcafea;--teal:#bcafea;--purp:#bcafea;
+}
+
+body[data-banknote="50"] {
+  --note-blue:#8a3f60;--accent:#8a3f60;--accent-ink:#8a3f60;--ink:color-mix(in srgb,#8a3f60 64%,#151320);
+  --ink2:#8a3f60;--ink3:color-mix(in srgb,#8a3f60 83%,#222031);
+  --bg-color:#ffe9f1;--bg:#ffe9f1;--card:#fffefe;--card-hover:#ffe9f1;--accent-soft:#ffe9f1;
+  --line:color-mix(in srgb,#d47b9c 40%,white);--line2:color-mix(in srgb,#d47b9c 67%,white);
+  --note-wash:#ffe9f1;--note-line:#8a3f6043;--glass:#ffe9f1d9;--glass-strong:#fffc;
+  --glass-edge:#fff;--glass-tint:#d47b9c42;--glass-line:#8a3f6038;
+  --glass-wall:linear-gradient(135deg,#ffe9f1,#fadee9);--paper-nav:#fadee9e0;
+  --paper-ink:#8a3f6022;--paper-weave:#8a3f601a;--glass-hero:linear-gradient(110deg,#fff,#fadee9);
+  --hero-grad:linear-gradient(135deg,#3c2233,#8a3f60);--payday-header:#8a3f60;--payday-header-dark:#3c2233;
+  --forecast-ink:#8a3f60;--ring-available:#3c2233;--ring-bills:#8a3f60;--ring-expense:#d47b9c;--ring-debt:color-mix(in srgb,#8a3f60 72%,#5d5279);
+  --ring-savings:color-mix(in srgb,#d47b9c 58%,white);--ring-income:color-mix(in srgb,#8a3f60 78%,#618087);
+  --blue:#8a3f60;--teal:#8a3f60;--purp:#8a3f60;--banknote-scene:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20480%20225%22%3E%3Cdefs%3E%3Cpattern%20id%3D%22h%22%20width%3D%225%22%20height%3D%225%22%20patternUnits%3D%22userSpaceOnUse%22%20patternTransform%3D%22rotate%2832%29%22%3E%3Cpath%20d%3D%22M0%200v5%22%20stroke%3D%22%238a3f60%22%20stroke-opacity%3D%22.32%22%2F%3E%3C%2Fpattern%3E%3C%2Fdefs%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%238a3f60%22%20stroke-width%3D%22.75%22%20opacity%3D%22.37%22%3E%3Cpath%20d%3D%22M0%20145Q150%20159%20258%20145T480%20145%22%2F%3E%3Cpath%20d%3D%22M0%20150Q150%20164%20258%20150T480%20150%22%2F%3E%3Cpath%20d%3D%22M0%20155Q150%20169%20258%20155T480%20155%22%2F%3E%3Cpath%20d%3D%22M0%20160Q150%20174%20258%20160T480%20160%22%2F%3E%3Cpath%20d%3D%22M0%20165Q150%20179%20258%20165T480%20165%22%2F%3E%3Cpath%20d%3D%22M0%20170Q150%20184%20258%20170T480%20170%22%2F%3E%3Cpath%20d%3D%22M0%20175Q150%20189%20258%20175T480%20175%22%2F%3E%3Cpath%20d%3D%22M0%20180Q150%20194%20258%20180T480%20180%22%2F%3E%3Cpath%20d%3D%22M0%20185Q150%20199%20258%20185T480%20185%22%2F%3E%3Cpath%20d%3D%22M0%20190Q150%20204%20258%20190T480%20190%22%2F%3E%3Cpath%20d%3D%22M0%20195Q150%20209%20258%20195T480%20195%22%2F%3E%3Cpath%20d%3D%22M0%20200Q150%20214%20258%20200T480%20200%22%2F%3E%3Cpath%20d%3D%22M0%20205Q150%20219%20258%20205T480%20205%22%2F%3E%3Cpath%20d%3D%22M0%20210Q150%20224%20258%20210T480%20210%22%2F%3E%3Cpath%20d%3D%22M0%20215Q150%20229%20258%20215T480%20215%22%2F%3E%3Cpath%20d%3D%22M0%20220Q150%20234%20258%20220T480%20220%22%2F%3E%3Cpath%20d%3D%22M155%2013Q285%20-25%20480%20-5%22%2F%3E%3Cpath%20d%3D%22M155%2022Q285%20-16%20480%204%22%2F%3E%3Cpath%20d%3D%22M155%2031Q285%20-7%20480%2013%22%2F%3E%3Cpath%20d%3D%22M155%2040Q285%202%20480%2022%22%2F%3E%3Cpath%20d%3D%22M155%2049Q285%2011%20480%2031%22%2F%3E%3Cpath%20d%3D%22M155%2058Q285%2020%20480%2040%22%2F%3E%3Cpath%20d%3D%22M155%2067Q285%2029%20480%2049%22%2F%3E%3Cpath%20d%3D%22M155%2076Q285%2038%20480%2058%22%2F%3E%3Cpath%20d%3D%22M155%2085Q285%2047%20480%2067%22%2F%3E%3Cpath%20d%3D%22M155%2094Q285%2056%20480%2076%22%2F%3E%3Cpath%20d%3D%22M155%20103Q285%2065%20480%2085%22%2F%3E%3Cpath%20d%3D%22M155%20112Q285%2074%20480%2094%22%2F%3E%3Cpath%20d%3D%22M155%20121Q285%2083%20480%20103%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22url%28%23h%29%22%20stroke%3D%22%238a3f60%22%20stroke-width%3D%221.25%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M182%20156Q229%20139%20266%20140L305%20104Q320%2098%20335%20121Q351%20126%20374%20111Q411%20108%20480%20157%20M239%20150l62-33%2020-13%20M384%20128q35%205%2073%2025%22%2F%3E%3Cpath%20d%3D%22M309%20169q41-38%2087-8l26-16-9%2025%2010%2022-27-12q-48%2019-87-11z%20M319%20166h1m12%2011q12-11%2010-26m16%2012%2024%202m-26%207%2022%200%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%238a3f60%22%20opacity%3D%22.55%22%3E%3Cpath%20d%3D%22M458%2029h10m-10%202h10%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  --banknote-scene-dark:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20480%20225%22%3E%3Cdefs%3E%3Cpattern%20id%3D%22h%22%20width%3D%225%22%20height%3D%225%22%20patternUnits%3D%22userSpaceOnUse%22%20patternTransform%3D%22rotate%2832%29%22%3E%3Cpath%20d%3D%22M0%200v5%22%20stroke%3D%22%23ec9cbb%22%20stroke-opacity%3D%22.32%22%2F%3E%3C%2Fpattern%3E%3C%2Fdefs%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23ec9cbb%22%20stroke-width%3D%22.75%22%20opacity%3D%22.37%22%3E%3Cpath%20d%3D%22M0%20145Q150%20159%20258%20145T480%20145%22%2F%3E%3Cpath%20d%3D%22M0%20150Q150%20164%20258%20150T480%20150%22%2F%3E%3Cpath%20d%3D%22M0%20155Q150%20169%20258%20155T480%20155%22%2F%3E%3Cpath%20d%3D%22M0%20160Q150%20174%20258%20160T480%20160%22%2F%3E%3Cpath%20d%3D%22M0%20165Q150%20179%20258%20165T480%20165%22%2F%3E%3Cpath%20d%3D%22M0%20170Q150%20184%20258%20170T480%20170%22%2F%3E%3Cpath%20d%3D%22M0%20175Q150%20189%20258%20175T480%20175%22%2F%3E%3Cpath%20d%3D%22M0%20180Q150%20194%20258%20180T480%20180%22%2F%3E%3Cpath%20d%3D%22M0%20185Q150%20199%20258%20185T480%20185%22%2F%3E%3Cpath%20d%3D%22M0%20190Q150%20204%20258%20190T480%20190%22%2F%3E%3Cpath%20d%3D%22M0%20195Q150%20209%20258%20195T480%20195%22%2F%3E%3Cpath%20d%3D%22M0%20200Q150%20214%20258%20200T480%20200%22%2F%3E%3Cpath%20d%3D%22M0%20205Q150%20219%20258%20205T480%20205%22%2F%3E%3Cpath%20d%3D%22M0%20210Q150%20224%20258%20210T480%20210%22%2F%3E%3Cpath%20d%3D%22M0%20215Q150%20229%20258%20215T480%20215%22%2F%3E%3Cpath%20d%3D%22M0%20220Q150%20234%20258%20220T480%20220%22%2F%3E%3Cpath%20d%3D%22M155%2013Q285%20-25%20480%20-5%22%2F%3E%3Cpath%20d%3D%22M155%2022Q285%20-16%20480%204%22%2F%3E%3Cpath%20d%3D%22M155%2031Q285%20-7%20480%2013%22%2F%3E%3Cpath%20d%3D%22M155%2040Q285%202%20480%2022%22%2F%3E%3Cpath%20d%3D%22M155%2049Q285%2011%20480%2031%22%2F%3E%3Cpath%20d%3D%22M155%2058Q285%2020%20480%2040%22%2F%3E%3Cpath%20d%3D%22M155%2067Q285%2029%20480%2049%22%2F%3E%3Cpath%20d%3D%22M155%2076Q285%2038%20480%2058%22%2F%3E%3Cpath%20d%3D%22M155%2085Q285%2047%20480%2067%22%2F%3E%3Cpath%20d%3D%22M155%2094Q285%2056%20480%2076%22%2F%3E%3Cpath%20d%3D%22M155%20103Q285%2065%20480%2085%22%2F%3E%3Cpath%20d%3D%22M155%20112Q285%2074%20480%2094%22%2F%3E%3Cpath%20d%3D%22M155%20121Q285%2083%20480%20103%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22url%28%23h%29%22%20stroke%3D%22%23ec9cbb%22%20stroke-width%3D%221.25%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M182%20156Q229%20139%20266%20140L305%20104Q320%2098%20335%20121Q351%20126%20374%20111Q411%20108%20480%20157%20M239%20150l62-33%2020-13%20M384%20128q35%205%2073%2025%22%2F%3E%3Cpath%20d%3D%22M309%20169q41-38%2087-8l26-16-9%2025%2010%2022-27-12q-48%2019-87-11z%20M319%20166h1m12%2011q12-11%2010-26m16%2012%2024%202m-26%207%2022%200%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%23ec9cbb%22%20opacity%3D%22.55%22%3E%3Cpath%20d%3D%22M458%2029h10m-10%202h10%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+body.dark[data-banknote="50"] {
+  --ink:#fff7fb;--ink2:#ec9cbb;--ink3:color-mix(in srgb,#ec9cbb 46%,white);
+  --accent:#8a3f60;--accent-ink:#ec9cbb;--note-blue:#ec9cbb;--note-wash:#3c2233;--note-line:#ec9cbb49;
+  --bg-color:#3c2233;--bg:#3c2233;--card:#3c2233;--card-hover:color-mix(in srgb,#3c2233 74%,#8a3f60);
+  --accent-soft:color-mix(in srgb,#3c2233 62%,#8a3f60);
+  --line:#ec9cbb44;--line2:#ec9cbb68;--glass:#3c2233e0;--glass-strong:#3c2233f5;
+  --glass-edge:#ec9cbb46;--glass-tint:#ec9cbb37;--glass-line:#ec9cbb43;
+  --glass-wall:linear-gradient(135deg,#3c2233,#151520);--paper-nav:#3c2233;
+  --paper-ink:#ec9cbb22;--paper-weave:#ec9cbb1a;--glass-hero:linear-gradient(110deg,#3c2233,#8a3f60);
+  --forecast-ink:#ec9cbb;--ring-available:#fff0ff;--ring-bills:#ec9cbb;--ring-expense:#d47b9c;
+  --ring-debt:color-mix(in srgb,#ec9cbb 76%,#9baee3);--ring-savings:#8a3f60;--ring-income:color-mix(in srgb,#ec9cbb 68%,#afd3da);
+  --blue:#ec9cbb;--teal:#ec9cbb;--purp:#ec9cbb;
+}
+
+body[data-banknote]:not([data-banknote="1000"]) .brand-mark {background:linear-gradient(145deg,var(--note-blue),var(--payday-header-dark))}
+body.dark[data-banknote]:not([data-banknote="1000"]) .brand-mark {background:var(--payday-header)}
+@media(prefers-reduced-transparency:reduce){
+  body[data-banknote]:not([data-banknote="1000"]) {--glass:var(--card);--glass-strong:var(--card)}
+}
+body[data-banknote="1000"] .ring-control::after {
+  content:'';position:absolute;inset:auto 9% 9% auto;width:11px;height:11px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 35% 28%,white 12%,#d9eff9 45%,#8fbad0 82%);
+  border:1px solid #a5c9d8;
 }
 </style>
 </head>
@@ -1645,6 +1706,7 @@ body {background:var(--bg-color)}
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Settings & Backup</div>
+    <fieldset class="banknote-picker"><legend>Banknote theme</legend><div class="banknote-options"><label class="banknote-option" style="--swatch:#69a5ca"><input id="banknote-1000" type="radio" name="banknote-theme" value="1000" onchange="setBanknoteTheme(this.value)"><span><strong>₱1,000 · Marine Blue</strong><small>Banca · Reef and pearl</small></span></label><label class="banknote-option" style="--swatch:#e2b64b"><input id="banknote-500" type="radio" name="banknote-theme" value="500" onchange="setBanknoteTheme(this.value)"><span><strong>₱500 · Golden Yellow</strong><small>Puerto Princesa · Blue-naped parrot</small></span></label><label class="banknote-option" style="--swatch:#9486d5"><input id="banknote-100" type="radio" name="banknote-theme" value="100" onchange="setBanknoteTheme(this.value)"><span><strong>₱100 · Blue Violet</strong><small>Mayon · Butanding</small></span></label><label class="banknote-option" style="--swatch:#d47b9c"><input id="banknote-50" type="radio" name="banknote-theme" value="50" onchange="setBanknoteTheme(this.value)"><span><strong>₱50 · Rose Pink</strong><small>Taal Lake · Maliputo</small></span></label></div></fieldset>
     
     <div style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:var(--bg);border-radius:var(--rs);margin-bottom:10px; border:1px solid var(--line);">
       <div>
@@ -2820,14 +2882,33 @@ function applyPrivacy() {
 }
 function togglePrivacy() { S.privacyMode = !S.privacyMode; applyPrivacy(); save(); }
 
+const banknoteThemes = {
+  '1000': {bars:5, light:'#e3f0f8', dark:'#10283c'},
+  '500': {bars:4, light:'#fff5d7', dark:'#342715'},
+  '100': {bars:2, light:'#eeebff', dark:'#231f41'},
+  '50': {bars:1, light:'#ffe9f1', dark:'#3c2233'}
+};
+function setBanknoteTheme(value) {
+  if (!Object.hasOwn(banknoteThemes,value)) return;
+  S.banknoteTheme = value;
+  applyTheme();
+  save();
+}
 function applyTheme() {
+  const value = Object.hasOwn(banknoteThemes,S.banknoteTheme) ? S.banknoteTheme : '1000';
+  const theme = banknoteThemes[value];
+  document.body.setAttribute('data-banknote',value);
+  const option = document.getElementById('banknote-' + value);
+  if (option) option.checked = true;
+  const bars = document.getElementById('banknote-bars');
+  if (bars) bars.innerHTML = '<i></i>'.repeat(theme.bars);
   document.body.classList.toggle('dark', S.theme === 'dark');
   const btn = document.getElementById('theme-toggle-btn');
   if(btn) btn.textContent = S.theme === 'dark' ? 'Disable' : 'Enable';
   
   // Update Meta Theme Color
   const metaTheme = document.getElementById('meta-theme-color');
-  if (metaTheme) metaTheme.content = S.theme === 'dark' ? '#121522' : '#f8f5ee';
+  if (metaTheme) metaTheme.content = S.theme === 'dark' ? theme.dark : theme.light;
 }
 function toggleTheme() { S.theme = S.theme === 'dark' ? 'light' : 'dark'; applyTheme(); save(); }
 
@@ -3575,7 +3656,7 @@ function renderPaydayPlanner(pid) {
   const paid = getBillsPaid(pid) + getCCPaid(pid);
   const percent = due > 0 ? Math.min(100, Math.round(paid / due * 100)) : 0;
   document.getElementById('payday-planner').innerHTML = `
-    <div class="v-balance"><div><h2>${safe < 0 ? 'Shortfall' : 'Available to spend'}</h2>
+    <span id="banknote-bars" class="note-bars" aria-hidden="true">${'<i></i>'.repeat((Object.hasOwn(banknoteThemes,S.banknoteTheme) ? banknoteThemes[S.banknoteTheme] : banknoteThemes['1000']).bars)}</span><div class="v-balance"><div><h2>${safe < 0 ? 'Shortfall' : 'Available to spend'}</h2>
       <div class="money-value feature-amount ${safe < 0 ? 'short-money' : ''}">${fPHP(Math.abs(safe))}</div>
       <div class="v-mini">${next ? 'Next payday ' + next.label : getPDef(pid).label}</div>
     </div><button type="button" class="ring-control" id="payday-ring" aria-label="Payday breakdown, explore categories" onclick="pickRingSlice(event,this)">${ringChart(parts)}</button></div>
@@ -3590,7 +3671,7 @@ function renderPaydayPlanner(pid) {
   const period = getPDef(pid);
   const later = dueEntries.filter(e => periodIndex.get(e.pid) > cutoff &&
     (getPDef(e.pid).month !== period.month || getPDef(e.pid).year !== period.year) && e.remaining > 0).slice(0,3);
-  document.getElementById('home-upcoming').innerHTML = paydayTimeline(pid) + '<details class="payday-checklist"><summary>Payday checklist</summary><div class="mini-chips">'+paydayChecklist(pid)+'</div></details>' +
+  document.getElementById('home-upcoming').innerHTML = paydayTimeline(pid) + '<div class="mini-chips" aria-label="Payday checklist">'+paydayChecklist(pid)+'</div>' +
     (later.length ? '<details class="timeline-future"><summary>Upcoming</summary>' + dueRows(later,'') + '</details>' : '');
 
 }
