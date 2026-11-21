@@ -1205,6 +1205,66 @@ body {
   body {background:var(--bg-color)}
   .nav-drawer,.mobile-nav {background:var(--card);border:1px solid var(--line)}
 }
+/* Quiet surfaces let the balance and payment dates lead. */
+:root {
+  --bg-color:#edf5fa;
+  --card:#fbfdff;
+  --glass:#f4faffdf;
+  --glass-strong:#f8fcfff2;
+  --line:#d4e4ed;
+  --glass-edge:#d4e4ed;
+  --glass-shadow:0 2px 12px #123a5608;
+}
+body.dark {
+  --bg-color:#122a3e;
+  --card:#172f44;
+  --glass:#18354ce8;
+  --glass-strong:#163147f2;
+  --line:#36566c;
+  --glass-edge:#36566c;
+  --glass-shadow:0 2px 12px #07182926;
+}
+body {background:var(--bg-color)}
+.nav-drawer,.mobile-nav {
+  background:var(--glass-strong);border:1px solid var(--line);box-shadow:var(--glass-shadow)
+}
+.brand-mark {background:var(--accent);box-shadow:none}
+.topnav {border-bottom:0}
+.workspace-head h1 {font-size:clamp(28px,3.5vw,42px)}
+.crd,.ov-card,.ds-card,#home-upcoming,#ov-income-preview,#home-shortcuts,.period-nav {box-shadow:none;border-color:var(--line)}
+#overview-lead summary {background:none;border:0;padding-inline:0}
+#payday-planner {border:1px solid var(--line);border-radius:24px;box-shadow:none}
+#payday-planner::before {
+  background-image:linear-gradient(95deg,#f8fcff 8%,#e9f4fbd9 35%,#dcebf68a 62%,#d3e9f33b),var(--engraving)
+}
+#payday-planner::after,.ring-engraving,.ring-control::before {display:none}
+.ring-control {box-shadow:none}
+.v-legend,.v-settled {background:var(--glass-strong)}
+#home-shortcuts {background:var(--card);padding:5px}
+#home-shortcuts button,#home-shortcuts button:first-child {flex-direction:row;gap:7px}
+#home-shortcuts b,#home-shortcuts button:first-child b {
+  width:20px;height:20px;border:0;box-shadow:none;background:none;color:var(--accent-ink)
+}
+#pane-overview .ov-card {min-height:82px;border-radius:16px}
+#pane-overview .ov-card .metric-glyph {
+  width:19px;height:19px;background:none;border:0;box-shadow:none;color:var(--accent-ink)
+}
+#pane-overview .ov-card .sparkline {opacity:.24}
+.payday-group {border-color:var(--line);border-radius:14px}
+.payday-group h3 {min-height:56px;background:var(--bg);color:var(--ink);border-color:var(--line)}
+.payday-group h3 small {color:var(--ink3)}
+.payday-group.is-selected {border-color:var(--accent);box-shadow:none}
+.payday-group.is-selected h3 {background:var(--accent-soft)}
+.date-tile,.payment-state {background:none;border:0}
+.payday-group .date-tile small {background:none;color:var(--ink3)}
+.spending-row,.row-item,.goal-row,.bill-row,.cc-card {background:var(--card)}
+.spending-row {border:0;padding-inline:0;border-radius:0}
+.payday-checklist {margin-top:12px}
+.payday-checklist summary {width:fit-content;color:var(--ink2);font-size:13px;cursor:pointer}
+@media(min-width:1180px) {
+  #home-shortcuts {align-content:stretch}
+  #home-shortcuts button {min-height:48px}
+}
 </style>
 </head>
 <body>
@@ -3530,7 +3590,7 @@ function renderPaydayPlanner(pid) {
   const period = getPDef(pid);
   const later = dueEntries.filter(e => periodIndex.get(e.pid) > cutoff &&
     (getPDef(e.pid).month !== period.month || getPDef(e.pid).year !== period.year) && e.remaining > 0).slice(0,3);
-  document.getElementById('home-upcoming').innerHTML = paydayTimeline(pid) + '<div class="mini-chips" aria-label="Payday checklist">'+paydayChecklist(pid)+'</div>' +
+  document.getElementById('home-upcoming').innerHTML = paydayTimeline(pid) + '<details class="payday-checklist"><summary>Payday checklist</summary><div class="mini-chips">'+paydayChecklist(pid)+'</div></details>' +
     (later.length ? '<details class="timeline-future"><summary>Upcoming</summary>' + dueRows(later,'') + '</details>' : '');
 
 }
