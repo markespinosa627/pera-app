@@ -1141,6 +1141,70 @@ body.dark #payday-planner::before {
 @media(min-width:850px){
  .v-balance {padding-inline-end:clamp(25px,12vw,175px)}
 }
+/* Engraved paper and a shared marine palette. Status colors retain their own meaning. */
+:root {
+  --bg-color:#e3f0f8;--bg:#e4f1f8;--card-hover:#e9f6fc;
+  --glass-line:#2b658238;--glass-shadow:0 12px 36px #123a5619,inset 0 1px 0 #ffffffde;
+  --glass-hover:0 16px 38px #123a5628,inset 0 1px 0 #fff;
+  --paper-ink:#4e87ac22;--paper-weave:#4d82a31a;--paper-nav:#cce5f1e0;
+  --blue:#286589;--teal:#2c647e;--purp:#315784;
+  --green:#256753;--red:#9f364d;--gold:#79581d;
+  --ring-available:#123a56;--ring-bills:#286589;--ring-debt:#4d6695;
+  --ring-expense:#3f829f;--ring-savings:#68a5c0;--ring-income:#254d70;
+  --select-glow:0 4px 14px #28658946;--focus-ring:0 0 0 3px #28658955;
+}
+body.dark {
+  --bg-color:#10283c;--bg:#1b3b54;--card-hover:#22465e;
+  --glass-line:#8ec4de4f;--glass-shadow:0 12px 36px #0715266b,inset 0 1px 0 #a2d9f130;
+  --glass-hover:0 16px 38px #07152685,inset 0 1px 0 #a2d9f155;
+  --paper-ink:#70abcd22;--paper-weave:#9bc7df20;--paper-nav:#17384ded;
+  --blue:#86c5ec;--teal:#8dd1e3;--purp:#b0c4f1;
+  --green:#8cd9be;--red:#ffa5b4;--gold:#efca82;
+  --ring-available:#d7edff;--ring-bills:#4ea3d0;--ring-debt:#9baee3;
+  --ring-expense:#76b9d0;--ring-savings:#447d9f;--ring-income:#c6def4;
+  --select-glow:0 4px 14px #0d1f34a0;--focus-ring:0 0 0 3px #80bddf66;
+  --accent:#286589;
+}
+:root,body.dark {
+  --gbg:color-mix(in srgb,var(--green) 13%,transparent);--gbr:color-mix(in srgb,var(--green) 33%,transparent);
+  --rbg:color-mix(in srgb,var(--red) 13%,transparent);--rbr:color-mix(in srgb,var(--red) 33%,transparent);
+  --ybg:color-mix(in srgb,var(--gold) 13%,transparent);--ybr:color-mix(in srgb,var(--gold) 33%,transparent);
+  --bbg:color-mix(in srgb,var(--blue) 13%,transparent);--bbr:color-mix(in srgb,var(--blue) 33%,transparent);
+  --tbg:color-mix(in srgb,var(--teal) 13%,transparent);--tbr:color-mix(in srgb,var(--teal) 33%,transparent);
+  --pbg:color-mix(in srgb,var(--purp) 13%,transparent);--pbr:color-mix(in srgb,var(--purp) 33%,transparent);
+}
+body {
+  background:
+    radial-gradient(ellipse at 50% 45%,var(--bg-color) 8%,transparent 76%),
+    repeating-radial-gradient(ellipse at -12% 84%,transparent 0 8px,var(--paper-ink) 9px 10px,transparent 11px 15px),
+    repeating-radial-gradient(ellipse at 113% 9%,transparent 0 8px,var(--paper-ink) 9px 10px,transparent 11px 15px),
+    repeating-linear-gradient(118deg,var(--paper-weave) 0 1px,transparent 1px 4px),
+    var(--glass-wall);
+  background-attachment:fixed;
+}
+.nav-drawer,.mobile-nav {
+  background:linear-gradient(165deg,var(--glass-strong),var(--paper-nav)) padding-box,
+    repeating-linear-gradient(125deg,var(--glass-edge) 0 2px,var(--paper-weave) 2px 4px) border-box;
+  border:3px solid transparent;
+}
+.overlay {background:#0b2e4b73}
+.crd,.ov-card,.ds-card,.spending-row,.timeline-pay,.compare-row {color:var(--ink)}
+.crd,.ov-card,.ds-card,#home-upcoming,#ov-income-preview {background:var(--card)}
+#home-shortcuts,.period-nav,.settings-btn {background:var(--glass)}
+#home-shortcuts b,.metric-glyph {background:var(--glass-tint)}
+#hero-card .hero-greeting,#hero-card .hero-label,#hero-card .hs-label,#hero-card .prog-meta {color:#e2f3fe}
+#hero-card .hs-val {color:#f8fcff}
+#hero-card .prog-fill {background:#89cbeb;box-shadow:none}
+#hero-card::before {background:repeating-radial-gradient(circle,transparent 0 20px,#bce7ff32 21px 22px)}
+.period-tag.now {color:var(--accent-ink);background:var(--accent-soft);border-color:var(--line2)}
+.chart-key span+span:before,.paired-bars i+i {background:var(--ring-expense)}
+.date-mark {box-shadow:inset 0 -3px var(--blue)}
+#pane-calendar .calendar-payday[aria-pressed="true"] {box-shadow:inset 0 1px 0 #ffffff66,var(--select-glow)}
+@media(prefers-reduced-transparency:reduce){
+  :root,body.dark {--glass:var(--card);--glass-strong:var(--card)}
+  body {background:var(--bg-color)}
+  .nav-drawer,.mobile-nav {background:var(--card);border:1px solid var(--line)}
+}
 </style>
 </head>
 <body>
@@ -1581,7 +1645,7 @@ body.dark #payday-planner::before {
     <div id="cat-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;max-height:240px;overflow-y:auto"></div>
     <div style="display:flex;gap:10px;margin-bottom:16px">
       <input type="text" id="new-cat-name" class="field-input" placeholder="New category..." style="flex:1">
-      <input type="color" id="new-cat-color" value="#8b5cf6" style="width:48px;height:48px;border:none;border-radius:14px;cursor:pointer;padding:0;background:none;-webkit-appearance:none">
+      <input type="color" id="new-cat-color" value="#286589" style="width:48px;height:48px;border:none;border-radius:14px;cursor:pointer;padding:0;background:none;-webkit-appearance:none">
       <button class="settings-btn" style="background:var(--ink);color:var(--card);border:none;padding:0 20px;font-weight:700;" onclick="addCategory()">Add</button>
     </div>
     <div class="modal-actions">
@@ -2057,7 +2121,7 @@ function animateNum(id, endVal, isCur, prefix='') {
 // Confetti Gamification
 function fireConfetti() {
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const colors = ['#34d399', '#fbbf24', '#60a5fa', '#a78bfa', '#fb7185'];
+  const colors = ['#286589', '#5197bb', '#83c5e6', '#123a56', '#d5eefb'];
   for(let i=0; i<60; i++) {
     const c = document.createElement('div');
     c.className = 'confetti';
@@ -2757,12 +2821,25 @@ function hardReset() {
 }
 
 // ── CATEGORIES & SEARCH ──────────────────────────────────────────
-function getCat(id) { return S.categories.find(c => c.id === id) || {label:'Other', color:'#888'}; }
+const categoryInks = {
+  food: ['#e8740a','expense'], transport: ['#3b82f6','bills'],
+  shopping: ['#8b5cf6','debt'], health: ['#10b981','savings'],
+  leisure: ['#f59e0b','income'], other: ['#888888','available']
+};
+function getCat(id) {
+  const category = S.categories.find(c => c.id === id);
+  if (!category) return {label:'Other', color:'var(--ring-available)'};
+  const ink = Object.hasOwn(categoryInks,id) ? categoryInks[id] : undefined;
+  if (ink && category.color?.toLowerCase() === ink[0]) {
+    return {...category, color:'var(--ring-' + ink[1] + ')'};
+  }
+  return category;
+}
 function openCategoriesModal() {
   const list = document.getElementById('cat-list');
   list.innerHTML = S.categories.map((c, i) => `
     <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg);border-radius:var(--rs); border:1px solid var(--line);">
-      <div style="width:16px;height:16px;border-radius:4px;background:${c.color}"></div>
+      <div style="width:16px;height:16px;border-radius:4px;background:${getCat(c.id).color}"></div>
       <div style="flex:1;font-size:14px;font-weight:700">${esc(c.label)}</div>
       <button class="del-btn" onclick="delCategory(${i})">×</button>
     </div>
@@ -3426,10 +3503,10 @@ function renderPaydayPlanner(pid) {
   const expenses = getExpTotal(pid);
   const safe = getAvail(pid) - savings;
   const parts = [
-    ['Bills',getBillsTotal(pid)-getBillsTotalByCat(pid,'debt')-splitAdjustment(pid),'bills','#225b7c'],
-    ['Debt',getBillsTotalByCat(pid,'debt')+getCCDue(pid),'credit','#6679a8'],
-    ['Expenses',expenses,'expenses','#5390ab'],['Savings',savings,'savings','#84b8d2'],
-    ['Available',Math.max(0,safe),'overview','#123a56']
+    ['Bills',getBillsTotal(pid)-getBillsTotalByCat(pid,'debt')-splitAdjustment(pid),'bills','var(--ring-bills)'],
+    ['Debt',getBillsTotalByCat(pid,'debt')+getCCDue(pid),'credit','var(--ring-debt)'],
+    ['Expenses',expenses,'expenses','var(--ring-expense)'],['Savings',savings,'savings','var(--ring-savings)'],
+    ['Available',Math.max(0,safe),'overview','var(--ring-available)']
   ];
   if (pid !== ringPeriod) ringActive = -1;
   ringPeriod = pid;
@@ -4102,27 +4179,26 @@ function getSpendingBreakdown(pid) {
     if (spendingCategoryId(id) === id && !byCategory.has(id)) byCategory.set(id, 0);
   }
   return Array.from(byCategory, ([id, amount]) => ({
-    name: getCat(id).label, amount, limit: Number(limits[id]) || 0
+    name: getCat(id).label, color: getCat(id).color, amount, limit: Number(limits[id]) || 0
   })).sort((a, b) => b.amount - a.amount || a.name.localeCompare(b.name));
 }
 
 function renderSpending(pid) {
   const categories = getSpendingBreakdown(pid);
   const total = categories.reduce((sum, category) => sum + category.amount, 0);
-  const colors = ['#5953a5','#8c81ca','#627ba6','#a782aa','#637f7a','#9f775e'];
-  const rows = categories.map(({name, amount, limit}, index) => {
+  const rows = categories.map(({name, color, amount, limit}) => {
     const used = limit ? Math.round(amount / limit * 100) : Math.round(amount / total * 100) || 0;
     const over = limit > 0 && amount > limit;
     const message = limit ? `${fPHP(Math.abs(limit - amount))} ${over ? 'over limit' : 'left'}` : `${used}% of spending`;
     return `<div class="spending-row ${over ? 'is-over' : ''}">
-      <div class="spending-line"><strong><i class="category-swatch" aria-hidden="true" style="background:${colors[index % colors.length]}"></i>${esc(name)}</strong><span class="spending-private num">${fPHP(amount)}${limit ? ' / ' + fPHP(limit) : ''}</span></div>
+      <div class="spending-line"><strong><i class="category-swatch" aria-hidden="true" style="background:${color}"></i>${esc(name)}</strong><span class="spending-private num">${fPHP(amount)}${limit ? ' / ' + fPHP(limit) : ''}</span></div>
       <div class="spending-track spending-private" aria-hidden="true"><div style="width:${Math.max(0, Math.min(100, used))}%"></div></div>
       <div class="spending-caption spending-private">${message}</div>
     </div>`;
   }).join('');
   const mix = total > 0 ? `<div class="spending-mix spending-private" aria-hidden="true">${categories
     .filter(category => category.amount > 0)
-    .map((category,index) => `<i style="flex:${category.amount};background:${colors[index % colors.length]}"></i>`).join('')}</div>` : '';
+    .map(category => `<i style="flex:${category.amount};background:${category.color}"></i>`).join('')}</div>` : '';
   const content = `<div class="spending-head">
       <div><h2>Spending by category</h2><p>${getPDef(pid).label} pay period</p></div>
       <button type="button" class="settings-btn" onclick="openSpendingLimits()">Edit limits</button>
@@ -4843,11 +4919,11 @@ function renderDashboard() {
     const lp = t.label.split(' ');
     return `<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;" onclick="goTo('${t.pid}');goTab('overview')" title="${t.label}">
       <div style="height:100px; display:flex; align-items:flex-end; gap:2px; width:100%; justify-content:center; background:var(--bg); border-radius:8px; padding:4px;">
-        <div style="width:12px; border-radius:4px; background:var(--green); height:${ih}px"></div>
-        <div style="width:12px; border-radius:4px; background:var(--red); height:${bh}px"></div>
-        <div style="width:12px; border-radius:4px; background:var(--purp); height:${dh}px"></div>
-        <div style="width:12px; border-radius:4px; background:var(--gold); height:${Math.max(eh,t.exp>0?2:0)}px"></div>
-        <div style="width:12px; border-radius:4px; background:var(--teal); height:${sh}px"></div>
+        <div style="width:12px; border-radius:4px; background:var(--ring-income); height:${ih}px"></div>
+        <div style="width:12px; border-radius:4px; background:var(--ring-bills); height:${bh}px"></div>
+        <div style="width:12px; border-radius:4px; background:var(--ring-debt); height:${dh}px"></div>
+        <div style="width:12px; border-radius:4px; background:var(--ring-expense); height:${Math.max(eh,t.exp>0?2:0)}px"></div>
+        <div style="width:12px; border-radius:4px; background:var(--ring-savings); height:${sh}px"></div>
       </div>
       <div style="font-size:10px; font-weight:700; color:var(--ink2); text-align:center;">${lp[0]}<br>${lp[1]}</div>
     </div>`;
@@ -4855,21 +4931,21 @@ function renderDashboard() {
 
   const chart = `<div class="dash-chart glass-panel stagger-item" style="padding:20px; margin-bottom:24px; animation-delay:0.1s">
     <div style="display:flex; justify-content:center; gap:16px; margin-bottom:16px; font-size:11px; font-weight:700;">
-      <div style="display:flex; align-items:center; gap:6px;"><div style="width:8px; height:8px; border-radius:50%; background:var(--green)"></div>Income</div>
-      <div style="display:flex; align-items:center; gap:6px;"><div style="width:8px; height:8px; border-radius:50%; background:var(--red)"></div>Bills</div>
-      <div style="display:flex; align-items:center; gap:6px;"><div style="width:8px; height:8px; border-radius:50%; background:var(--purp)"></div>Debt</div>
-      <div style="display:flex; align-items:center; gap:6px;"><div style="width:8px; height:8px; border-radius:50%; background:var(--gold)"></div>Expenses</div>
-      <div style="display:flex; align-items:center; gap:6px;"><div style="width:8px; height:8px; border-radius:50%; background:var(--teal)"></div>Savings</div>
+      <div style="display:flex; align-items:center; gap:6px;"><div style="width:8px; height:8px; border-radius:50%; background:var(--ring-income)"></div>Income</div>
+      <div style="display:flex; align-items:center; gap:6px;"><div style="width:8px; height:8px; border-radius:50%; background:var(--ring-bills)"></div>Bills</div>
+      <div style="display:flex; align-items:center; gap:6px;"><div style="width:8px; height:8px; border-radius:50%; background:var(--ring-debt)"></div>Debt</div>
+      <div style="display:flex; align-items:center; gap:6px;"><div style="width:8px; height:8px; border-radius:50%; background:var(--ring-expense)"></div>Expenses</div>
+      <div style="display:flex; align-items:center; gap:6px;"><div style="width:8px; height:8px; border-radius:50%; background:var(--ring-savings)"></div>Savings</div>
     </div>
     <div style="display:flex; gap:6px; justify-content:space-between;">${bars}</div>
     <div style="font-size:10px;color:var(--ink3);text-align:center;margin-top:12px">Tap a bar to jump to that period</div>
   </div>`;
 
   const donutData = [
-    {label:'Other bills', val:sumUtil, color:'var(--blue)'},
-    {label:'Subscriptions', val:sumSub, color:'var(--purp)'},
-    {label:'Debt', val:sumDebt, color:'var(--purp)'},
-    {label:'Expenses', val:sumE, color:'var(--gold)'}
+    {label:'Other bills', val:sumUtil, color:'var(--ring-bills)'},
+    {label:'Subscriptions', val:sumSub, color:'var(--ring-savings)'},
+    {label:'Debt', val:sumDebt, color:'var(--ring-debt)'},
+    {label:'Expenses', val:sumE, color:'var(--ring-expense)'}
   ];
 
   const bkTable = `<div class="breakdown-table glass-panel stagger-item" style="padding:20px; margin-bottom:24px; display:flex; flex-direction:column; gap:12px; animation-delay:0.15s">
