@@ -996,6 +996,66 @@ body.dark #payday-planner::before {opacity:.34}
   #payday-planner::before {display:none}
   .modal,.nav-drawer,.mobile-nav,.period-nav {backdrop-filter:none;-webkit-backdrop-filter:none}
 }
+/* Banknote-inspired linework stays behind the financial data. */
+:root {
+  --note-blue: #214c69;
+  --note-line: #32648c36;
+  --note-wash: #d8e9f4;
+  --glass-wall: radial-gradient(ellipse at 12% 2%, #dae7f5, transparent 55%), radial-gradient(ellipse at 95% 32%, #e2dff3, transparent 48%), #f7f5ef;
+  --glass-hero: linear-gradient(112deg,#faf8f1 10%,#edf3f7 57%,#cce2ef);
+}
+body.dark {
+  --note-blue:#a9cde6;
+  --note-line:#95c5e447;
+  --note-wash:#28374e;
+  --glass-hero:linear-gradient(112deg,#262337 14%,#243247 66%,#274662);
+}
+#payday-planner::before {
+  opacity:1;
+  background:
+    linear-gradient(100deg,var(--glass-strong),transparent 60%),
+    repeating-radial-gradient(ellipse at 94% 105%,transparent 0 7px,var(--note-line) 8px 9px,transparent 10px 13px),
+    repeating-radial-gradient(ellipse at 114% 8%,transparent 0 10px,var(--note-line) 11px 12px,transparent 13px 17px);
+}
+#payday-planner::after {
+  content:'';position:absolute;inset:7px;z-index:-1;pointer-events:none;
+  border:3px double var(--note-line);border-radius:25px;
+}
+.v-balance h2 {color:var(--note-blue)}
+.ring-control {border:3px double var(--note-line)}
+.brand-mark {background:linear-gradient(145deg,#406e96,#49418b)}
+#home-upcoming .feature-head {align-items:baseline;margin-bottom:12px}
+#home-upcoming .feature-head h2 {margin:0;font-size:19px}
+.payday-columns {display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+.payday-group {
+  min-width:0;margin:0;padding:0 12px 5px;border:1px solid var(--note-line);
+  border-radius:17px;background:var(--glass);
+}
+.payday-group.is-selected {border-color:var(--accent)}
+.payday-group h3 {display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;margin:0;border-bottom:1px solid var(--note-line)}
+.payday-group h3 small {display:block;margin:2px 0 0;font-weight:500}
+.payday-group .payday-total {text-align:right;overflow-wrap:anywhere}
+.payday-group .payday-total b {font-size:15px}
+.timeline-row:last-child {border-bottom:0}
+.timeline-pay {min-height:58px;grid-template-columns:36px minmax(0,1fr) minmax(60px,auto);gap:7px}
+.timeline-name small {display:block}
+.timeline-amount {min-width:0;text-align:right}
+.timeline-amount b {overflow-wrap:anywhere}
+.timeline-shift summary {padding:10px 0 10px 8px}
+.timeline-shift[open] {padding-bottom:8px}
+.payday-group .date-tile small {background:var(--note-wash);color:var(--note-blue)}
+#home-upcoming .mini-chips {margin-top:12px}
+@media(min-width:690px){.payday-columns {grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}}
+@media(min-width:750px){
+  #pane-overview #home-upcoming {grid-column:1/-1}
+  #pane-overview #spending-overview {grid-column:auto}
+}
+@media(min-width:1180px){
+  #pane-overview #spending-overview {grid-column:7/13}
+}
+@media(prefers-reduced-transparency:reduce){
+  #payday-planner::before {display:none}
+}
 </style>
 </head>
 <body>
@@ -1102,8 +1162,8 @@ body.dark #payday-planner::before {opacity:.34}
       <button onclick="openIncomeModal()"><b aria-hidden="true">＋</b>Income</button>
     </div>
     <div class="ov-grid" id="ov-grid"></div>
-    <section id="ov-income-preview" aria-label="Income"></section>
     <section id="home-upcoming" class="crd feature-card"></section>
+    <section id="ov-income-preview" aria-label="Income"></section>
     <div class="crd spending-card" id="spending-overview"></div>
   </div>
 
@@ -3199,12 +3259,14 @@ function shiftPayment(key) {
 function paydayTimeline(pid) {
   const p = getPDef(pid);
   const periods = periodsByYear.get(p.year).slice(p.month * 2, p.month * 2 + 2);
-  return `<div class="feature-head"><h2>Payday timeline</h2><small>${monthNames[p.month]} ${p.year}</small></div>` +
+  return `<div class="feature-head"><h2>Payday timeline</h2><small>${monthNames[p.month]} ${p.year}</small></div><div class="payday-columns">` +
     periods.map(period => {
       const entries = dueEntries.filter(e => e.pid === period.id);
       const target = alternatePayday(period.id);
       const remaining = entries.reduce((sum,e) => sum + toPHP(e.remaining,e.currency), 0);
-      return `<section class="payday-group"><h3><i aria-hidden="true"></i>${period.half === 15 ? '15th' : 'Month-end'}<small class="feature-amount" title="Remaining">${fPHP(remaining)}</small></h3>
+      return `<section class="payday-group ${period.id === pid ? 'is-selected' : ''}">
+        <h3><span>${period.half === 15 ? '15th' : 'Month-end'}<small>${period.shortLabel} payday</small></span>
+          <span class="payday-total"><b class="feature-amount">${fPHP(remaining)}</b><small>Unpaid</small></span></h3>
         ${entries.map(e => {
           const day = parseDueDate(e.date);
           const label = e.bill && e.bill.category !== 'debt' ? 'Bill' : 'Debt';
@@ -3212,10 +3274,10 @@ function paydayTimeline(pid) {
             <span class="date-tile" aria-label="${day ? 'Due '+dueLabel(e.date) : 'Due date unset'}"><small>${day ? monthNames[day.month] : 'Due'}</small><b>${day ? day.day : '—'}</b></span>
             <span class="timeline-name"><strong>${esc(e.name)}</strong><small>${label}${e.bill && splitShare(e.bill) ? ' · Split' : ''}</small></span>
             <span class="timeline-amount"><b class="feature-amount">${fAmt(e.remaining || (e.bill ? e.bill.amount : installmentAmount(e.inst,e.pid)),e.currency)}</b>${paymentBadge(e.remaining,e.date)}</span></button>
-            ${canShiftPayment(e,target) ? `<details class="timeline-shift"><summary aria-label="Change funding payday for ${esc(e.name)}" title="Change funding payday">⇄</summary>${fundingPreview(e,target)}<button onclick="shiftPayment(${e.key})">Move to ${target.shortLabel}</button>${splitEditor(e,target)}</details>` : ''}</div>`;
+            ${canShiftPayment(e,target) ? `<details class="timeline-shift"><summary aria-label="Change funding payday for ${esc(e.name)}" title="Funding options">⇄</summary>${fundingPreview(e,target)}<button onclick="shiftPayment(${e.key})">Move to ${target.shortLabel}</button>${splitEditor(e,target)}</details>` : ''}</div>`;
         }).join('') || '<div class="timeline-empty">Nothing due</div>'}
         ${(S.bills[target.id]||[]).filter(b=>splitShare(b)>0).map(b=>`<p class="v-mini">↔ ${esc(b.name)} · <b class="feature-amount">${fAmt(splitShare(b),b.currency||'PHP')}</b> reserved</p>`).join('')}</section>`;
-    }).join('');
+    }).join('') + '</div>';
 }
 
 let ringParts = [], ringActive = -1, ringPeriod = '';
