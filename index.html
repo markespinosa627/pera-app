@@ -880,6 +880,122 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
 .forecast summary,.goal-mile summary,.bill-bars button{cursor:pointer}.forecast svg{display:block;width:100%;max-height:100px}.goal-mile i{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle,var(--card) 48%,transparent 50%),conic-gradient(var(--accent) var(--pct),var(--line) 0)}.goal-mile .hit{color:var(--accent-ink);font-weight:750}
 .bill-bars{display:flex;align-items:end;gap:3px}.bill-bars button{background:none;border:0;padding:4px 1px;height:34px;display:flex;align-items:end}.bill-bars i{width:20px;height:var(--h);background:var(--accent);border-radius:3px}
 .annual-grid [aria-pressed=true]{background:var(--accent-soft);border-color:var(--accent)}
+/* Translucent surfaces share one edge treatment across light and dark mode. */
+:root {
+  --glass: #ffffffa8;
+  --glass-strong: #ffffffe8;
+  --glass-edge: #ffffffcc;
+  --glass-line: #48428228;
+  --glass-shadow: 0 12px 36px #40337512, inset 0 1px 0 #ffffffbf;
+  --glass-hover: 0 16px 38px #40337525, inset 0 1px 0 #ffffffdd;
+  --glass-tint: #e7e4ff9c;
+  --glass-wall: radial-gradient(ellipse at 12% 2%, #e2ddff, transparent 55%), radial-gradient(ellipse at 95% 32%, #f1dff0, transparent 48%), #f5f4fa;
+  --glass-hero: linear-gradient(132deg,#fcfbffec 5%,#e6e2ffca 58%,#e0e8ffd6);
+  --r: 25px;
+}
+body.dark {
+  --glass: #26243bc7;
+  --glass-strong: #242236f5;
+  --glass-edge: #ffffff26;
+  --glass-line: #c6bcff3a;
+  --glass-shadow: 0 14px 38px #08061240, inset 0 1px 0 #ffffff15;
+  --glass-hover: 0 16px 40px #0a061d60, inset 0 1px 0 #ffffff35;
+  --glass-tint: #6460ac43;
+  --glass-wall: radial-gradient(ellipse at 14% 1%, #39315e, transparent 58%), radial-gradient(ellipse at 92% 36%,#40304b,transparent 48%), #161523;
+  --glass-hero: linear-gradient(130deg,#343052,#292643 58%,#31395b);
+  --hero-grad: linear-gradient(130deg,#30294e,#50437b);
+}
+body {background:var(--glass-wall);background-attachment:fixed}
+.blob {display:none}
+.brand-mark {background:linear-gradient(150deg,#8275ed,#4e429c);color:white;-webkit-text-fill-color:white;box-shadow:inset 0 1px 0 #ffffff8c,0 4px 12px #4f3fac42}
+.app {padding-inline:clamp(13px,3vw,38px)}
+.topnav {border-bottom:1px solid var(--glass-line)}
+.workspace-head {margin-block:20px 16px}
+.workspace-head h1 {font-size:clamp(32px,4.2vw,53px);font-weight:680;letter-spacing:-.065em}
+.crd,.ov-card,.ds-card,.modal,.period-nav,#home-shortcuts,#ov-income-preview,#home-upcoming,#payday-planner,.nav-drawer,.mobile-nav {
+  background:var(--glass);border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow)
+}
+.modal,.nav-drawer,.mobile-nav,.period-nav {backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%)}
+.modal {background:var(--glass-strong);border-radius:var(--r)}
+.overlay {background:#1d163e64}
+.nav-drawer {background:var(--glass-strong);border-radius:0 var(--r) var(--r) 0}
+.drawer-logo small {font-weight:500}
+.drawer-link,.settings-btn,.p-arrow,.period-nav {border-radius:999px}
+.drawer-link.active,body.dark .drawer-link.active,.mobile-nav button[aria-current="page"] {background:var(--glass-tint);border-color:var(--glass-edge);color:var(--accent-ink)}
+.settings-btn,.p-arrow {background:var(--glass);border:1px solid var(--glass-edge);box-shadow:inset 0 1px 1px var(--glass-edge)}
+.btn-confirm,.scan-btn,.quick-add {border-radius:999px}
+.field-input,.field-select,.spending-row,.bill-row,.goal-row,.row-item,.cc-card {background:var(--glass);border-color:var(--glass-line);border-radius:15px}
+.crd-body,body.dark .crd-body {background:none}
+.feature-card,.spending-card,#ov-income-preview,#home-upcoming {padding:clamp(14px,2.3vw,24px)}
+#ov-income-preview .crd {background:none}
+#overview-lead summary {background:var(--glass);border-color:var(--glass-edge);border-radius:18px}
+#payday-planner {position:relative;isolation:isolate;background:var(--glass-hero);border-radius:32px}
+#payday-planner::before {
+  content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at 85% 12%,#ffffff68,transparent 42%),
+    repeating-radial-gradient(ellipse at 92% 0%,transparent 0 27px,#ffffff30 28px 29px,transparent 30px 43px)
+}
+body.dark #payday-planner::before {opacity:.34}
+.v-balance {background:none;padding:clamp(16px,3vw,34px);gap:8px}
+.v-balance h2 {font-size:14px;font-weight:650;color:var(--ink2)}
+.v-balance .money-value {font-size:clamp(29px,5vw,72px);font-weight:680;letter-spacing:-.075em}
+#payday-planner > .v-mini {margin:0 16px 10px;padding:5px 10px;width:fit-content;background:var(--glass);border-radius:999px}
+.ring-control {width:clamp(96px,14vw,172px);background:var(--glass);border:1px solid var(--glass-edge);border-radius:50%;box-shadow:var(--glass-shadow)}
+.ring-control svg {padding:5px}.ring-center b {letter-spacing:-.06em}
+.v-legend {border-color:var(--glass-line)}
+.v-legend button {border-radius:999px}
+.v-settled progress {height:8px}
+#home-shortcuts {border-radius:24px;padding:7px;gap:6px}
+#home-shortcuts button,#home-shortcuts button:first-child {justify-content:center;flex-direction:column;gap:4px;background:transparent;color:var(--ink);border:0;border-radius:17px;padding:7px 4px}
+#home-shortcuts b,.metric-glyph {display:inline-grid;place-items:center;width:32px;height:32px;border-radius:11px;background:var(--glass-tint);color:var(--accent-ink);font-size:17px;line-height:1;font-weight:650}
+#home-shortcuts button:first-child b {background:var(--accent);color:white}
+#pane-overview #ov-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+#pane-overview .ov-card {min-height:110px;padding:12px 14px;border-radius:21px}
+#pane-overview .ov-card-label {font-size:11px;text-transform:none;letter-spacing:0}
+#pane-overview .ov-card .metric-glyph {flex:none}
+.timeline-pay {grid-template-columns:38px minmax(0,1fr) auto;min-height:50px}
+.date-tile {background:var(--glass);border-color:var(--glass-edge);border-radius:9px;padding-bottom:2px}
+.payment-state {background:var(--glass);padding:2px 6px;border-radius:999px}
+.spending-mix {display:flex;gap:3px;height:12px;border-radius:999px;overflow:hidden;margin:0 0 13px}
+.category-swatch {display:inline-block;width:8px;height:8px;border-radius:50%;margin-inline-end:6px}
+.spending-mix i {min-width:0;border-radius:3px}
+.spending-track,.spending-track div,.compare-row i {border-radius:999px}
+.calendar-day,.heat-grid button {border-radius:10px}
+#pane-calendar .calendar-payday[aria-pressed="true"] {box-shadow:inset 0 1px 0 #ffffff66,0 4px 14px #4f3fac40}
+#pane-dashboard .feature-card {min-width:0}
+#purchase-preview {padding:10px;border-radius:14px;background:var(--glass-tint)}
+:is(button,summary,a,input,select):focus-visible {outline:2px solid var(--accent-ink);outline-offset:2px}
+@media(max-width:999px) {
+  .mobile-nav {inset-inline:10px;bottom:calc(7px + env(safe-area-inset-bottom));padding:5px;border-radius:24px;background:var(--glass-strong)}
+  .mobile-nav button {border-radius:19px}
+  .app {padding-bottom:calc(155px + env(safe-area-inset-bottom))}
+}
+@media(min-width:560px) {
+  #home-shortcuts {grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(min-width:850px) {
+  #pane-overview #ov-grid {grid-template-columns:repeat(5,minmax(0,1fr))}
+  #pane-overview .ov-card:last-child:nth-child(odd) {grid-column:auto}
+}
+@media(min-width:1000px) {
+  .nav-drawer {left:12px;top:12px;bottom:12px;height:auto;width:208px;border-radius:27px}
+}
+@media(min-width:1180px) {
+  #home-shortcuts {grid-template-columns:repeat(2,minmax(0,1fr));align-content:center}
+  #home-shortcuts button {min-height:78px}
+}
+@media(hover:hover) {
+  #home-shortcuts button:hover,.settings-btn:hover {background:var(--glass-tint)}
+  #pane-overview .ov-card:hover {box-shadow:var(--glass-hover)}
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+@media(prefers-reduced-transparency:reduce) {
+  :root,body.dark {--glass:var(--card);--glass-strong:var(--card);--glass-hero:var(--card);--glass-wall:var(--bg-color)}
+  #payday-planner::before {display:none}
+  .modal,.nav-drawer,.mobile-nav,.period-nav {backdrop-filter:none;-webkit-backdrop-filter:none}
+}
 </style>
 </head>
 <body>
@@ -980,10 +1096,10 @@ body,button,input,select,textarea,.num,.feature-amount {font-family:Geist,-apple
   </div>
   </details>
     <div id="home-shortcuts" aria-label="Quick actions">
-      <button onclick="openExpModal()"><b aria-hidden="true">＋</b>Expense</button>
-      <button onclick="openDebtModal()"><b aria-hidden="true">＋</b>Bill</button>
-      <button onclick="openDebtModal(true)"><b aria-hidden="true">＋</b>Debt</button>
-      <button onclick="openIncomeModal()"><b aria-hidden="true">↙</b>Income</button>
+      <button onclick="openExpModal()"><b aria-hidden="true">−</b>Expense</button>
+      <button onclick="openDebtModal()"><b aria-hidden="true">≡</b>Bill</button>
+      <button onclick="openDebtModal(true)"><b aria-hidden="true">↗</b>Debt</button>
+      <button onclick="openIncomeModal()"><b aria-hidden="true">＋</b>Income</button>
     </div>
     <div class="ov-grid" id="ov-grid"></div>
     <section id="ov-income-preview" aria-label="Income"></section>
@@ -3500,11 +3616,11 @@ function renderOverview(pid, pIdx, income, bills, exp, debt, avail, alloc) {
   const expTrend = genSparkline(getTrendData(pIdx, 6, id => getExpTotal(id)), 'var(--gold)');
 
   document.getElementById('ov-grid').innerHTML = `
-    <button type="button" class="ov-card" onclick="goTab('income')"><div class="ov-card-label">Income received<span aria-hidden="true">↗</span></div><div class="ov-card-val num g">${fPHP0(income)} <span style="font-size:11px;color:var(--ink3);font-weight:600;font-family:'Geist',sans-serif">/ ${fPHP0(expectedInc + roll)}</span></div><div class="ov-card-sub">${srcs.length} sources</div>${incTrend}</button>
-    <button type="button" class="ov-card" onclick="goTab('bills')"><div class="ov-card-label">Bills<span aria-hidden="true">↗</span></div><div class="ov-card-val num r">${fPHP0(bills)}</div><div class="ov-card-sub">${(S.bills[pid]||[]).filter(b=>b.category !== 'debt' && b.status !== 'PAID').length} unpaid</div></button>
-    <button type="button" class="ov-card" onclick="goTab('expenses')"><div class="ov-card-label">Expenses<span aria-hidden="true">↗</span></div><div class="ov-card-val num y">${fPHP0(exp)}</div><div class="ov-card-sub">${(S.expenses[pid]||[]).length} logged</div>${expTrend}</button>
-    <button type="button" class="ov-card" onclick="goTab('credit')"><div class="ov-card-label">Debt due<span aria-hidden="true">↗</span></div><div class="ov-card-val num p">${fPHP0(debt)}</div><div class="ov-card-sub">Scheduled</div></button>
-    <button type="button" class="ov-card" onclick="goTab('savings')"><div class="ov-card-label">Savings allocated<span aria-hidden="true">↗</span></div><div class="ov-card-val num g">${fPHP0(alloc)}</div><div class="ov-card-sub">${fPHP0(avail-alloc)} unalloc.</div></button>
+    <button type="button" class="ov-card" onclick="goTab('income')"><div class="ov-card-label">Income received<span class="metric-glyph" aria-hidden="true">↙</span></div><div class="ov-card-val num g">${fPHP0(income)} <span style="font-size:11px;color:var(--ink3);font-weight:600;font-family:'Geist',sans-serif">/ ${fPHP0(expectedInc + roll)}</span></div><div class="ov-card-sub">${srcs.length} sources</div>${incTrend}</button>
+    <button type="button" class="ov-card" onclick="goTab('bills')"><div class="ov-card-label">Bills<span class="metric-glyph" aria-hidden="true">≡</span></div><div class="ov-card-val num r">${fPHP0(bills)}</div><div class="ov-card-sub">${(S.bills[pid]||[]).filter(b=>b.category !== 'debt' && b.status !== 'PAID').length} unpaid</div></button>
+    <button type="button" class="ov-card" onclick="goTab('expenses')"><div class="ov-card-label">Expenses<span class="metric-glyph" aria-hidden="true">−</span></div><div class="ov-card-val num y">${fPHP0(exp)}</div><div class="ov-card-sub">${(S.expenses[pid]||[]).length} logged</div>${expTrend}</button>
+    <button type="button" class="ov-card" onclick="goTab('credit')"><div class="ov-card-label">Debt due<span class="metric-glyph" aria-hidden="true">↗</span></div><div class="ov-card-val num p">${fPHP0(debt)}</div><div class="ov-card-sub">Scheduled</div></button>
+    <button type="button" class="ov-card" onclick="goTab('savings')"><div class="ov-card-label">Savings allocated<span class="metric-glyph" aria-hidden="true">◉</span></div><div class="ov-card-val num g">${fPHP0(alloc)}</div><div class="ov-card-sub">${fPHP0(avail-alloc)} unalloc.</div></button>
   `;
 
   const recvd = srcs.filter(s => S.incomeReceived[pid]?.[s.id]);
@@ -3844,21 +3960,25 @@ function getSpendingBreakdown(pid) {
 function renderSpending(pid) {
   const categories = getSpendingBreakdown(pid);
   const total = categories.reduce((sum, category) => sum + category.amount, 0);
-  const rows = categories.map(({name, amount, limit}) => {
+  const colors = ['#5953a5','#8c81ca','#627ba6','#a782aa','#637f7a','#9f775e'];
+  const rows = categories.map(({name, amount, limit}, index) => {
     const used = limit ? Math.round(amount / limit * 100) : Math.round(amount / total * 100) || 0;
     const over = limit > 0 && amount > limit;
     const message = limit ? `${fPHP(Math.abs(limit - amount))} ${over ? 'over limit' : 'left'}` : `${used}% of spending`;
     return `<div class="spending-row ${over ? 'is-over' : ''}">
-      <div class="spending-line"><strong>${esc(name)}</strong><span class="spending-private num">${fPHP(amount)}${limit ? ' / ' + fPHP(limit) : ''}</span></div>
+      <div class="spending-line"><strong><i class="category-swatch" aria-hidden="true" style="background:${colors[index % colors.length]}"></i>${esc(name)}</strong><span class="spending-private num">${fPHP(amount)}${limit ? ' / ' + fPHP(limit) : ''}</span></div>
       <div class="spending-track spending-private" aria-hidden="true"><div style="width:${Math.max(0, Math.min(100, used))}%"></div></div>
       <div class="spending-caption spending-private">${message}</div>
     </div>`;
   }).join('');
+  const mix = total > 0 ? `<div class="spending-mix spending-private" aria-hidden="true">${categories
+    .filter(category => category.amount > 0)
+    .map((category,index) => `<i style="flex:${category.amount};background:${colors[index % colors.length]}"></i>`).join('')}</div>` : '';
   const content = `<div class="spending-head">
       <div><h2>Spending by category</h2><p>${getPDef(pid).label} pay period</p></div>
       <button type="button" class="settings-btn" onclick="openSpendingLimits()">Edit limits</button>
     </div>
-    <div class="spending-rows">${rows || '<p class="spending-caption">No spending recorded.</p>'}</div>`;
+    ${mix}<div class="spending-rows">${rows || '<p class="spending-caption">No spending recorded.</p>'}</div>`;
   for (const id of ['spending-overview', 'spending-expenses','report-limits']) {
     document.getElementById(id).innerHTML = content;
   }
