@@ -1327,6 +1327,8 @@ body[data-banknote="1000"] .ring-control::after {
   --frost-lift:0 14px 32px #122e4e30;
 }
 body.dark {
+  --night-card:color-mix(in srgb,var(--card) 62%,#070b14);
+  --frost:color-mix(in srgb,var(--night-card) 92%,transparent);
   --frost-shadow:0 9px 26px #020b184f;
   --frost-lift:0 14px 32px #020b186e;
 }
@@ -1393,6 +1395,24 @@ button:not(:disabled):active,summary:active {scale:.97}
   :root,body.dark {--frost:var(--card);--frost-nav:var(--card)}
   :is(.crd,.ov-card,.ds-card,.modal,.period-nav,.payday-group,.spending-row,.row-item,.bill-row,.exp-row,.goal-row,.cc-card,.nav-drawer,.mobile-nav),
   #home-shortcuts,#ov-income-preview,#home-upcoming {backdrop-filter:none;-webkit-backdrop-filter:none}
+}
+/* Keep the dark dashboard shaded without losing the current banknote hue. */
+body.dark #payday-planner {
+  background:linear-gradient(115deg,var(--night-card),color-mix(in srgb,var(--card) 82%,#070b14));
+}
+body.dark[data-banknote] #payday-planner::before {
+  background:linear-gradient(90deg,var(--night-card) 2%,transparent 72%),var(--banknote-scene-dark) right bottom / auto 100% no-repeat;
+  opacity:.38;
+}
+body.dark :is(.ring-control,.v-legend,.v-settled,.forecast svg,.payday-group h3) {
+  background:var(--night-card);
+}
+body.dark .payday-group.is-selected h3 {
+  background:linear-gradient(120deg,var(--night-card),color-mix(in srgb,var(--payday-header) 38%,var(--night-card)));
+}
+@media(prefers-reduced-transparency:reduce) {
+  body.dark {--frost:var(--night-card)}
+  body.dark[data-banknote] #payday-planner::before {display:none}
 }
 </style>
 </head>
