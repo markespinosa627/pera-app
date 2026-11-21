@@ -1415,6 +1415,18 @@ body.dark .payday-group.is-selected h3 {
   body.dark {--frost:var(--night-card);--frost-nav:var(--night-card)}
   body.dark[data-banknote] #payday-planner::before {display:none}
 }
+
+.money-explain summary {display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.money-explain summary::-webkit-details-marker {display:none}
+.balance-math {margin:8px 0;display:grid;gap:4px}
+.balance-math div,.comparison-row {display:flex;justify-content:space-between;gap:12px}
+.balance-math dt,.balance-math dd {margin:0}
+.shortfall-flag {margin:0 16px 10px;padding:8px 12px;border-radius:12px;background:var(--rbg);color:var(--red)}
+.shortfall-flag summary {cursor:pointer;font-weight:650}
+.shortfall-flag ul {margin:8px 0;padding-inline-start:18px}
+.budget-undo {position:fixed;bottom:calc(94px + env(safe-area-inset-bottom));left:50%;translate:-50% 0;z-index:10000;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;background:var(--glass-strong);color:var(--ink);box-shadow:var(--frost-lift)}
+.comparison-row {padding:4px 0}
+.budget-undo[hidden] {display:none}
 </style>
 </head>
 <body>
@@ -1480,6 +1492,7 @@ body.dark .payday-group.is-selected h3 {
   <div class="workspace-head">
     <h1 id="workspace-title">Home</h1>
     <div id="app-status" class="app-status" role="status"></div>
+    <div class="budget-undo" id="budget-undo" hidden><span id="budget-undo-message" role="status"></span><button type="button" class="settings-btn" onclick="undoBudgetChange()">Undo</button><button type="button" class="settings-btn" onclick="dismissBudgetUndo()" aria-label="Dismiss undo">×</button></div>
     <div class="period-nav" id="period-nav" aria-label="Pay period">
     <button class="p-arrow" id="prev-btn" aria-label="Previous pay period" onclick="prevPeriod()">‹</button>
     <div class="period-center">
@@ -1810,6 +1823,7 @@ body.dark .payday-group.is-selected h3 {
       <button onclick="exportCSV()" style="padding:14px;border-radius:var(--rs);border:1px solid var(--gbr);background:var(--gbg);color:var(--green);font-family:'Geist',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.2s var(--bezier);">
         📄 Export Data to CSV
       </button>
+      <p id="backup-status" class="feature-note" role="status"></p>
       <button onclick="downloadBackup()" style="padding:14px;border-radius:var(--rs);border:1px solid var(--pbr);background:var(--pbg);color:var(--purp);font-family:'Geist',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:all 0.2s var(--bezier);">
         ↓ Download Backup File
       </button>
@@ -1846,11 +1860,23 @@ body.dark .payday-group.is-selected h3 {
   </div>
 </div>
 <!-- SEARCH MODAL -->
+<div class="overlay" id="backup-preview-ov" role="dialog" aria-modal="true" aria-labelledby="backup-preview-title" onclick="closeIf(event,'backup-preview-ov')">
+  <div class="modal">
+    <h2 class="modal-title" id="backup-preview-title">Review backup</h2>
+    <p id="backup-preview-summary"></p>
+    <p class="feature-note">Restoring replaces the budget stored on this device.</p>
+    <p id="backup-preview-error" role="alert"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn-cancel" onclick="closeOverlay('backup-preview-ov')">Cancel</button>
+      <button type="button" class="btn-confirm" onclick="restorePreviewedBackup()">Restore budget</button>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="search-ov" onclick="closeIf(event,'search-ov')">
   <div class="modal" style="display:flex;flex-direction:column">
     <div class="modal-handle"></div>
     <div class="modal-title">Search History</div>
-    <input type="text" class="field-input" id="search-input" placeholder="Search expenses, bills, items..." oninput="doSearch(this.value)" style="margin-bottom:16px">
+    <input type="text" class="field-input" id="search-input" placeholder="Search name, amount, or category" oninput="doSearch(this.value)" style="margin-bottom:16px">
     <div id="search-results" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px"></div>
     <div class="modal-actions">
       <button class="btn-cancel" style="width:100%" onclick="closeOverlay('search-ov')">Close</button>
@@ -1906,13 +1932,14 @@ body.dark .payday-group.is-selected h3 {
     <form onsubmit="event.preventDefault(); saveRecurringBill()">
       <div class="field"><label class="field-label" for="recurring-mode">Action</label>
         <select class="field-select" id="recurring-mode" onchange="updateRecurringFields()">
-          <option value="change">Change or extend schedule</option><option value="pause">Pause for a date range</option><option value="end">End schedule</option>
+          <option value="forward">Change from this payday onward</option><option value="change">Change or extend a date range</option><option value="pause">Pause for a date range</option><option value="end">End schedule</option>
         </select>
       </div>
       <div class="field"><label class="field-label" for="recurring-start-button">From pay period</label>
         <select hidden id="recurring-start"></select>
         <button type="button" class="field-select calendar-trigger" id="recurring-start-button" onclick="openPeriodModal('recurring-start')"></button>
       </div>
+      <p class="feature-note" id="recurring-forward-note">Updates the rest of the existing schedule. If there are no scheduled payments from that payday, it creates up to 12 months of payments.</p>
       <div class="field" id="recurring-range"><label class="field-label" for="recurring-end-button">Through pay period</label>
         <select hidden id="recurring-end"></select>
         <button type="button" class="field-select calendar-trigger" id="recurring-end-button" onclick="openPeriodModal('recurring-end')"></button>
@@ -2118,7 +2145,7 @@ body.dark .payday-group.is-selected h3 {
     <label class="field-label" for="e-date">Purchase date</label><input class="field-input" id="e-date" type="date"><div class="mini-chips" id="recent-expenses"></div><p id="purchase-preview" aria-live="polite"></p>
     <p class="expense-error" id="expense-error" role="alert"></p>
     <div class="modal-actions">
-      <button class="btn-cancel" type="button" onclick="closeOverlay('exp-ov')">Cancel</button>
+      <button class="btn-cancel" id="expense-cancel" type="button" onclick="closeOverlay('exp-ov')">Cancel</button>
       <button class="btn-confirm" id="expense-submit" type="submit">Log expense</button>
     </div>
     </form>
@@ -2732,8 +2759,8 @@ function hTouchEnd(e, type, pid, idx, ext1, ext2) {
   swipeRow.classList.remove('swipe-left', 'swipe-right');
   
   if (dX > 80) { // Swipe Right = Pay/Recv
-    if(type==='bill') { const b = S.bills[pid][idx]; if(b.status !== 'PAID') { b.paidAmt = b.amount; b.status = 'PAID'; fireConfetti(); save(); renderAll(); } }
-    if(type==='cc') { const cl=S.creditLines.find(c=>c.id===ext1); const i=cl.installments.find(x=>x.id===ext2); if(!i.paidPeriods)i.paidPeriods={}; if(!i.paidPeriods[pid]){ i.paidPeriods[pid]=true; fireConfetti(); save(); renderAll();} }
+    if(type==='bill') { const b = S.bills[pid][idx]; if(b.status !== 'PAID' && !b.extraPayment) { const undo = trackBillPayment(pid,b); b.paidAmt = b.amount; b.status = 'PAID'; undo(); fireConfetti(); save(); renderAll(); } }
+    if(type==='cc') { const cl=S.creditLines.find(c=>c.id===ext1); const i=cl.installments.find(x=>x.id===ext2); if(!i.paidPeriods)i.paidPeriods={}; if(!i.paidPeriods[pid]){ const undo = trackInstallmentPayment(cl,i,pid); i.paidPeriods[pid]=true; undo(); fireConfetti(); save(); renderAll();} }
   }
   if (dX < -80) { // Swipe Left = Delete
     if(type==='bill') { if(confirm('Delete bill?')) delBill(pid, idx); }
@@ -2985,6 +3012,7 @@ function toggleTheme() { S.theme = S.theme === 'dark' ? 'light' : 'dark'; applyT
 
 function openSettingsPanel() {
   document.getElementById('roll-toggle-btn').textContent = S.enableRollover ? 'Disable' : 'Enable';
+  showBackupStatus();
   openOverlay('settings-ov');
 }
 function toggleRollover() {
@@ -3012,17 +3040,73 @@ function exportCSV() {
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `badyet_export.csv`; a.click();
 }
-function downloadBackup() {
-  const blob = new Blob([localStorage.getItem(STORE)], {type: "application/json"});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `badyet-backup.json`; a.click();
+let backupPending;
+function showBackupStatus(message) {
+  const savedAt = S.lastBackupAt && new Date(S.lastBackupAt);
+  const date = savedAt && Number.isFinite(savedAt.getTime()) ? savedAt.toLocaleString() : '';
+  document.getElementById('backup-status').textContent = message || (date ? 'Last backup generated ' + date : 'No backup date recorded.');
 }
-function handleRestore(e) {
-  const file = e.target.files[0]; if(!file) return;
+function downloadBackup() {
+  const lastBackupAt = new Date().toISOString();
+  const blob = new Blob([JSON.stringify({...S,lastBackupAt})], {type:'application/json'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'badyet-backup.json';
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  S.lastBackupAt = lastBackupAt;
+  save();
+  showBackupStatus();
+}
+function parseBudgetBackup(text) {
+  const data = JSON.parse(text);
+  const object = value => value && typeof value === 'object' && !Array.isArray(value);
+  const records = value => Array.isArray(value) && value.every(object);
+  const ledger = value => object(value) && Object.values(value).every(records);
+  if (!object(data) || !ledger(data.bills) || !ledger(data.expenses)) throw new Error('Invalid budget backup');
+  for (const key of ['income','goals','creditLines','categories','annualPlans','irregularPlans']) {
+    if (data[key] !== undefined && !records(data[key])) throw new Error('Invalid records');
+  }
+  for (const key of ['savings','incomeReceived','incomeMods','spendingLimits','recurringTemplates','paydayChecks']) {
+    if (data[key] !== undefined && (!object(data[key]) || !Object.values(data[key]).every(object))) throw new Error('Invalid settings');
+  }
+  if ((data.irregularPlans || []).some(plan => !parseDueDate(plan.date) ||
+    !Number.isFinite(plan.amount) || plan.amount <= 0 || !Number.isFinite(plan.saved) || plan.saved < 0 || plan.saved > plan.amount)) throw new Error('Invalid plans');
+  if ((data.creditLines || []).some(line => line.installments !== undefined && !records(line.installments))) throw new Error('Invalid installments');
+  if (Object.values(data.bills).some(entries => entries.some(bill => typeof bill.name !== 'string'))) throw new Error('Invalid bills');
+  return data;
+}
+function handleRestore(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  event.target.value = '';
+  backupPending = null;
   const reader = new FileReader();
-  reader.onload = function(event) {
-    localStorage.setItem(STORE, event.target.result); location.reload();
+  reader.onerror = () => showBackupStatus('Could not read the backup file.');
+  reader.onload = () => {
+    try {
+      backupPending = parseBudgetBackup(reader.result);
+      const count = ledger => Object.values(ledger).reduce((sum, entries) => sum + entries.length, 0);
+      const data = backupPending;
+      document.getElementById('backup-preview-summary').textContent =
+        `${file.name} · ${count(data.bills)} bills and debt entries · ${count(data.expenses)} expenses · ${data.income?.length || 0} income sources · ${data.goals?.length || 0} savings goals · ${data.creditLines?.length || 0} credit lines`;
+      document.getElementById('backup-preview-error').textContent = '';
+      openOverlay('backup-preview-ov');
+    } catch {
+      showBackupStatus('This file is not a valid BADYET backup.');
+    }
   };
   reader.readAsText(file);
+}
+function restorePreviewedBackup() {
+  if (!backupPending) return;
+  try {
+    localStorage.setItem(STORE, JSON.stringify(backupPending));
+    backupPending = null;
+    location.reload();
+  } catch {
+    document.getElementById('backup-preview-error').textContent = 'The browser could not save this backup.';
+  }
 }
 
 function hardReset() {
@@ -3084,22 +3168,30 @@ function openSearchPanel() {
   setTimeout(()=>document.getElementById('search-input').focus(), 100);
 }
 function doSearch(q) {
-  q = q.toLowerCase(); if(!q) return;
-  let res = [];
-  PERIOD_DEFS.forEach(p => {
-    (S.expenses[p.id]||[]).forEach(e => { if(e.name.toLowerCase().includes(q)) res.push({type:'Expense', name:e.name, amt:e.amount, cur:e.currency||'PHP', pid:p.id, pLabel:p.label, cat:getCat(e.cat)}); });
-    (S.bills[p.id]||[]).forEach(b => { if(b.name.toLowerCase().includes(q)) res.push({type:b.category === 'debt' ? 'Debt' : 'Bill', name:b.name, amt:b.amount, cur:b.currency||'PHP', pid:p.id, pLabel:p.label, status:b.status}); });
-  });
-  document.getElementById('search-results').innerHTML = res.map((r, i) => `
-    <div class="row-item stagger-item" style="cursor:pointer; animation-delay:${i*0.05}s" onclick="goTo('${r.pid}');closeOverlay('search-ov')">
-      <div class="row-dot" style="background:${r.cat ? r.cat.color : (r.status==='PAID'?'var(--green)':'var(--red)')}"></div>
-      <div class="row-det">
-        <div class="row-name">${esc(r.name)}</div>
-        <div class="row-sub">${r.type} · ${r.pLabel}</div>
-      </div>
-      <div class="row-amt num">${fAmt(r.amt, r.cur)}</div>
-    </div>
-  `).join('') || `<div class="empty-state"><div class="empty-icon">👻</div><div class="empty-title">No results</div><div class="empty-desc">Couldn't find anything. Did you imagine buying that? 🤔</div></div>`;
+  const words = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const results = document.getElementById('search-results');
+  if (!words.length) {
+    results.textContent = 'Search your expenses and bills across pay periods.';
+    return;
+  }
+  const matches = [];
+  const add = (p, item, type, category, tab) => {
+    const cur = item.currency || 'PHP';
+    const name = String(item.name || '');
+    const source = [name, category, type, p.label, cur, item.amount,
+      fAmt(item.amount,cur), toPHP(item.amount,cur), fPHP(toPHP(item.amount,cur))].join(' ').toLowerCase();
+    if (words.every(word => source.includes(word))) matches.push({p,name,item,cur,category,tab});
+  };
+  for (const p of PERIOD_DEFS.slice().reverse()) {
+    for (const e of S.expenses[p.id] || []) add(p,e,'Expense',getCat(e.cat).label,'expenses');
+    for (const b of S.bills[p.id] || []) add(p,b,b.category === 'debt' ? 'Debt' : 'Bill',BILL_CATS[b.category]?.label || 'Other',b.category === 'debt' ? 'credit' : 'bills');
+  }
+  results.innerHTML = matches.slice(0,100).map(({p,name,item,cur,category,tab}) => `
+    <button type="button" class="ledger-row" onclick="goTo('${p.id}');goTab('${tab}');${tab === 'bills' ? `selectBillView('${item.status === 'PAID' ? 'Paid' : 'Upcoming'}');` : ''}closeOverlay('search-ov')">
+      <span><strong>${esc(name)}</strong><small>${esc(category)} · ${p.label}</small></span>
+      <span class="feature-amount num">${fAmt(item.amount,cur)}</span>
+    </button>`).join('') || '<p class="feature-note">No matching transactions.</p>';
+  if (matches.length > 100) results.insertAdjacentHTML('beforeend','<small>Showing the 100 most recent matches.</small>');
 }
 
 // ── INCOME EDITING ─────────────────────────────────────────────────
@@ -3487,8 +3579,12 @@ function repeatExpense(i) {
 }
 function previewPurchase() {
   const before=spendable(expensePeriodId)+(expenseBeingEdited?toPHP(expenseBeingEdited.amount,expenseBeingEdited.currency||'PHP'):0);
-  const cost=toPHP(Number(document.getElementById('e-amt').value)||0,document.getElementById('e-cur').value||'PHP');
-  document.getElementById('purchase-preview').innerHTML=`Available <strong class="feature-amount">${fPHP(before)} → ${fPHP(before-cost)}</strong>`;
+  const entered = Number(document.getElementById('e-amt').value);
+  const cost = Number.isFinite(entered) && entered > 0 ? toPHP(entered,document.getElementById('e-cur').value||'PHP') : 0;
+  const after = before - cost;
+  const short = firstShortfall(expensePeriodId, (expenseBeingEdited ? toPHP(expenseBeingEdited.amount,expenseBeingEdited.currency||'PHP') : 0) - cost);
+  const warning = cost > 0 && short ? `<span class="feature-amount short-money"> · ${fPHP(-short.balance)} short by ${dueLabel(short.date)}</span>` : '';
+  document.getElementById('purchase-preview').innerHTML=`Available <strong class="feature-amount">${fPHP(before)} → ${fPHP(after)}</strong>${warning}`;
 }
 function periodWindow(pid) {
   const p=getPDef(pid),today=isoDay(new Date());
@@ -3542,15 +3638,46 @@ function spendingHeat(p) {
 function showDaySpending(date) {
   document.getElementById('day-spending').innerHTML='<strong>'+dueLabel(date)+'</strong>'+((heatDays.get(date)||[]).map(e=>`<p>${esc(e.name)} <b class="feature-amount">${fAmt(e.amount,e.currency||'PHP')}</b></p>`).join('')||' · No spending');
 }
+function forecastSchedule(pid, adjustment = 0) {
+  const {start,end} = periodWindow(pid);
+  const cutoff = periodIndex.get(pid);
+  const events = dueEntries.filter(e => {
+    const index = periodIndex.get(e.pid);
+    return index >= cutoff && e.remaining > 0 && e.date && (!end || e.date < end) &&
+      (e.pid === pid || e.date >= start);
+  });
+  const amount = e => toPHP(e.remaining,e.currency);
+  let balance = spendable(pid) + adjustment + events.filter(e => e.pid === pid).reduce((total,e) => total + amount(e),0);
+  const points = [{date:start,balance,entries:[]}];
+  const groups = new Map();
+  for (const entry of events) {
+    const date = entry.date < start ? start : entry.date;
+    if (!groups.has(date)) groups.set(date,[]);
+    groups.get(date).push(entry);
+  }
+  for (const [date,entries] of [...groups].sort(([a],[b]) => a.localeCompare(b))) {
+    balance -= entries.reduce((total,e) => total + amount(e),0);
+    points.push({date,balance,entries});
+  }
+  if (end) points.push({date:end,balance,entries:[]});
+  return {start,end,points};
+}
+function firstShortfall(pid, adjustment = 0) {
+  const {points} = forecastSchedule(pid,adjustment);
+  return points.find(point => point.balance < -.005);
+}
+function shortfallFlag(pid) {
+  const short = firstShortfall(pid);
+  if (!short) return '';
+  const entries = short.entries.map(e => `<li>${esc(e.name)} · <span class="feature-amount">${fAmt(e.remaining,e.currency)}</span></li>`).join('');
+  return `<details class="shortfall-flag"><summary><span class="feature-amount">${fPHP(-short.balance)} short by ${dueLabel(short.date)}</span></summary>
+    ${entries ? '<ul>'+entries+'</ul>' : '<p>Your available balance is already below zero.</p>'}
+    <small>Based on logged income and scheduled payments.</small></details>`;
+}
 function balanceForecast(pid) {
-  const {start,end}=periodWindow(pid);
+  const {start,end,points:schedule}=forecastSchedule(pid);
   if(!end)return '<small>Calendar limit reached</small>';
-  const events=dueEntries.filter(e=>e.pid===pid && e.remaining && e.date>=start && e.date<=end);
-  const amount=e=>toPHP(e.remaining,e.currency);
-  let balance=spendable(pid)+events.reduce((s,e)=>s+amount(e),0);
-  const points=[[start,balance]];
-  for(const date of [...new Set(events.map(e=>e.date))]){balance-=events.filter(e=>e.date===date).reduce((s,e)=>s+amount(e),0);points.push([date,balance]);}
-  points.push([end,balance]);
+  const points = schedule.map(({date,balance}) => [date,balance]);
   const low=points.reduce((a,b)=>a[1]<=b[1]?a:b);
   const max=Math.max(...points.map(x=>x[1])),min=low[1];
   const xy=points.map(([d,v])=>[(Date.parse(d)-Date.parse(start))/(Date.parse(end)-Date.parse(start))*280+5,42-(v-min)/(max-min||1)*35]);
@@ -3594,9 +3721,55 @@ function addAnnual(form) {
   (S.annualPlans ||= []).push({name:titleField.value.trim(),amount:Number(cost.value),date:due.value});save();renderDashboard();
 }
 function removeAnnual(index) {if(confirm('Remove this annual plan?')){S.annualPlans.splice(index,1);save();renderDashboard();}}
+function irregularPlanner(pid) {
+  const anchor = pid === currentPeriod.id ? isoDay(new Date()) : paydayDate(getPDef(pid));
+  const plans = S.irregularPlans || [];
+  const rows = plans.map((plan,index) => {
+    const count = PERIOD_DEFS.filter(period => {
+      const date = paydayDate(period);
+      return date >= anchor && date <= plan.date;
+    }).length;
+    const remaining = Math.max(0,plan.amount - plan.saved);
+    const advice = !remaining ? 'Fully funded' : count
+      ? fPHP(Math.ceil(remaining * 100 / count) / 100) + ' per payday · ' + count + (count === 1 ? ' payday' : ' paydays')
+      : fPHP(remaining) + ' still needed';
+    return `<div class="annual-item"><strong>${esc(plan.name)}</strong> · ${dueLabel(plan.date)}<br>
+      <small class="feature-amount">${advice}</small>
+      <form class="mini-chips" onsubmit="event.preventDefault();updateIrregular(${index},this.elements.saved.value)">
+        <input class="field-input" name="saved" aria-label="Amount already set aside for ${esc(plan.name)}" type="number" min="0" max="${plan.amount}" step=".01" value="${plan.saved}" required>
+        <button type="submit">Update set aside</button><button type="button" onclick="removeIrregular(${index})">Remove</button>
+      </form></div>`;
+  }).join('');
+  return rows + `<details><summary>Add planned expense</summary>
+    <form class="mini-stack" onsubmit="event.preventDefault();addIrregular(this)">
+      <input name="titleField" aria-label="Expense name" placeholder="Car registration" required>
+      <input name="cost" aria-label="Target amount in pesos" type="number" min=".01" step=".01" placeholder="₱ Target amount" required>
+      <input name="due" aria-label="Due date" type="date" required>
+      <button>Save plan</button>
+    </form></details><small>Planning targets only. Log actual spending separately.</small>`;
+}
+function addIrregular(form) {
+  const {titleField,cost,due} = form.elements;
+  const amount = Number(cost.value);
+  if (!titleField.value.trim() || !parseDueDate(due.value) || !Number.isFinite(amount) || amount <= 0) return;
+  (S.irregularPlans ||= []).push({name:titleField.value.trim(),amount,date:due.value,saved:0});
+  save(); renderDashboard();
+}
+function updateIrregular(index,value) {
+  const plan = S.irregularPlans?.[index];
+  const saved = Number(value);
+  if (!plan || !Number.isFinite(saved) || saved < 0 || saved > plan.amount) return;
+  plan.saved = saved;
+  save(); renderDashboard();
+}
+function removeIrregular(index) {
+  if (!S.irregularPlans?.[index] || !confirm('Remove this planned expense?')) return;
+  S.irregularPlans.splice(index,1);
+  save(); renderDashboard();
+}
 function planningReports(pid) {
   const p=getPDef(pid);
-  return reportBox('Available by payday',comparePaydays(p))+reportBox('Balance forecast',balanceForecast(pid))+reportBox('Spending · '+monthNames[p.month],spendingHeat(p))+reportBox('Annual payments',annualPlanner(pid));
+  return reportBox('Available by payday',comparePaydays(p))+reportBox('Balance forecast',shortfallFlag(pid)+balanceForecast(pid))+reportBox('Spending · '+monthNames[p.month],spendingHeat(p))+reportBox('Annual payments',annualPlanner(pid))+reportBox('Irregular expenses',irregularPlanner(pid));
 }
 
 function canShiftPayment(entry, target) {
@@ -3709,8 +3882,21 @@ function debtMilestones(account) {
   return `<div class="payoff-marks">${marks}<span>${done}/${slots.length} paid</span></div>`;
 }
 
+function balanceExplanation(pid) {
+  const lines = [
+    ['Received income',getReceivedIncomePHP(pid)],
+    ['Rollover',rolloverMemo[pid] || 0],
+    ['Bills and debt',-(getBillsTotal(pid)+getCCDue(pid))],
+    ['Bill funding adjustment',splitAdjustment(pid)],
+    ['Spending',-getExpTotal(pid)],
+    ['Savings',-getAlloc(pid)]
+  ];
+  return `<dl class="balance-math">${lines.filter(([,amount]) => amount).map(([label,amount]) =>
+    `<div><dt>${label}</dt><dd class="feature-amount">${fPHP(amount)}</dd></div>`).join('') || '<div><dt>No activity</dt><dd class="feature-amount">₱0.00</dd></div>'}</dl>`;
+}
 function renderPaydayPlanner(pid) {
-  const next = PERIOD_DEFS[periodIndex.get(pid) + 1];
+  refreshDueEntries();
+  const {end:nextPayday} = periodWindow(pid);
   const savings = getAlloc(pid);
   const expenses = getExpTotal(pid);
   const safe = getAvail(pid) - savings;
@@ -3728,15 +3914,15 @@ function renderPaydayPlanner(pid) {
   const percent = due > 0 ? Math.min(100, Math.round(paid / due * 100)) : 0;
   document.getElementById('payday-planner').innerHTML = `
     <span id="banknote-bars" class="note-bars" aria-hidden="true">${'<i></i>'.repeat((Object.hasOwn(banknoteThemes,S.banknoteTheme) ? banknoteThemes[S.banknoteTheme] : banknoteThemes['1000']).bars)}</span><div class="v-balance"><div><h2>${safe < 0 ? 'Shortfall' : 'Available to spend'}</h2>
-      <div class="money-value feature-amount ${safe < 0 ? 'short-money' : ''}">${fPHP(Math.abs(safe))}</div>
-      <div class="v-mini">${next ? 'Next payday ' + next.label : getPDef(pid).label}</div>
+      <details class="money-explain"><summary aria-label="Explain available balance"><span class="money-value feature-amount ${safe < 0 ? 'short-money' : ''}">${fPHP(Math.abs(safe))}</span><span aria-hidden="true">⌄</span></summary>${balanceExplanation(pid)}</details>
+      <div class="v-mini">${nextPayday ? 'Next payday ' + dueLabel(nextPayday) : getPDef(pid).label}</div>
     </div><button type="button" class="ring-control" id="payday-ring" aria-label="Payday breakdown, explore categories" onclick="pickRingSlice(event,this)">${ringChart(parts)}</button></div>
     ${dailyGuide(pid)}
+    ${shortfallFlag(pid)}
     <div class="v-legend" aria-label="Payday breakdown">${parts.map(([label,,,color],i) =>
       `<button type="button" data-part="${i}" aria-pressed="${ringActive === i}" onclick="selectRing(${i})"><i style="background:${color}"></i>${label}</button>`).join('')}</div>
     <div class="v-settled"><div><span>Payments settled</span><strong class="feature-amount">${due ? percent+'%' : 'None due'}</strong></div>
       <progress aria-label="Payments settled" max="100" value="${percent}"></progress></div>`;
-  refreshDueEntries();
   document.getElementById("bill-signals").innerHTML=billSignals(pid);
   const cutoff = periodIndex.get(pid);
   const period = getPDef(pid);
@@ -3884,7 +4070,7 @@ function openRecurringBill(index) {
   const next = PERIOD_DEFS[periodIndex.get(currentPeriod.id) + 1];
   initCalendarField('recurring-start', next?.id || currentPeriod.id);
   initCalendarField('recurring-end', next?.id || currentPeriod.id);
-  document.getElementById('recurring-mode').value = 'change';
+  document.getElementById('recurring-mode').value = 'forward';
   document.getElementById('recurring-error').textContent = '';
   updateRecurringFields();
   closeOverlay('abo-ov');
@@ -3900,19 +4086,23 @@ function closeRecurringEditor() {
 
 function updateRecurringFields() {
   const mode = document.getElementById('recurring-mode').value;
-  document.getElementById('recurring-range').hidden = mode === 'end';
-  document.getElementById('recurring-changes').hidden = mode !== 'change';
+  document.getElementById('recurring-forward-note').hidden = mode !== 'forward';
+  document.getElementById('recurring-range').hidden = mode === 'end' || mode === 'forward';
+  document.getElementById('recurring-changes').hidden = mode !== 'change' && mode !== 'forward';
 }
 
 function saveRecurringBill() {
   if (!recurringEdit) return;
   const {group, template, freq} = recurringEdit;
-  const mode = document.getElementById('recurring-mode').value;
+  const action = document.getElementById('recurring-mode').value;
+  const mode = action === 'forward' ? 'change' : action;
   const start = periodIndex.get(document.getElementById('recurring-start').value);
-  const end = periodIndex.get(document.getElementById('recurring-end').value);
+  const lastScheduled = Math.max(-1,...group.instances.map(({pid}) => periodIndex.get(pid)));
+  const end = action === 'forward' ? (lastScheduled >= start ? lastScheduled : Math.min(start + 23,PERIOD_DEFS.length-1))
+    : periodIndex.get(document.getElementById('recurring-end').value);
   const error = document.getElementById('recurring-error');
-  if (start === undefined || start <= periodIndex.get(currentPeriod.id) || (mode !== 'end' && (end === undefined || end < start))) {
-    error.textContent = 'Choose a future start period and an end period on or after it.';
+  if (start === undefined || start < periodIndex.get(currentPeriod.id) || (mode !== 'end' && (end === undefined || end < start))) {
+    error.textContent = 'Choose the current or a future start period, with the end on or after it.';
     return;
   }
   const amount = Number(document.getElementById('recurring-amount').value);
@@ -3958,7 +4148,7 @@ function saveRecurringBill() {
       if (existing.has(period.id)) continue;
       (S.bills[period.id] ||= []).push({
         name: group.baseName, amount, currency: template.currency || 'PHP', category: group.category,
-        notes: template.notes, autoPay: !!template.autoPay, status: 'PROJECTED', paidAmt: 0,
+        notes: template.notes, autoPay: !!template.autoPay, status: period.isProjected ? 'PROJECTED' : 'UNPAID', paidAmt: 0,
         custom: true, seriesId, frequency, dueDate:period.dueDate, fundingMode
       });
     }
@@ -4370,10 +4560,26 @@ function getSpendingBreakdown(pid) {
     if (spendingCategoryId(id) === id && !byCategory.has(id)) byCategory.set(id, 0);
   }
   return Array.from(byCategory, ([id, amount]) => ({
-    name: getCat(id).label, color: getCat(id).color, amount, limit: Number(limits[id]) || 0
+    id, name: getCat(id).label, color: getCat(id).color, amount, limit: Number(limits[id]) || 0
   })).sort((a, b) => b.amount - a.amount || a.name.localeCompare(b.name));
 }
 
+function spendingComparison(pid,categories,total) {
+  const previous = PERIOD_DEFS[periodIndex.get(pid)-1];
+  if (!previous) return '';
+  const earlier = getSpendingBreakdown(previous.id);
+  const baseline = earlier.reduce((sum,category) => sum + category.amount,0);
+  const changes = new Map(earlier.map(({id,name,amount}) => [id,{name,difference:-amount}]));
+  for (const {id,name,amount} of categories) {
+    changes.set(id,{name,difference:amount+(changes.get(id)?.difference || 0)});
+  }
+  const amountLabel = value => (value > 0 ? '+' : '') + fPHP(value);
+  const biggest = [...changes.values()].filter(({difference}) => Math.abs(difference) >= .005)
+    .sort((a,b) => Math.abs(b.difference)-Math.abs(a.difference)).slice(0,3);
+  return `<details><summary>This period vs. ${previous.shortLabel} <span class="spending-private">${amountLabel(total-baseline)}</span></summary>
+    <div class="comparison-row"><span>Previous spending</span><b class="spending-private">${fPHP(baseline)}</b></div>
+    ${biggest.map(({name,difference}) => `<div class="comparison-row"><span>${esc(name)}</span><b class="spending-private">${amountLabel(difference)}</b></div>`).join('') || '<small>No category changes.</small>'}</details>`;
+}
 function renderSpending(pid) {
   const categories = getSpendingBreakdown(pid);
   const total = categories.reduce((sum, category) => sum + category.amount, 0);
@@ -4405,7 +4611,7 @@ function renderSpending(pid) {
     </div>
     <div class="spending-body ${pie ? 'has-pie' : ''}">${pie}<div class="spending-rows">${rows || '<p class="spending-caption">No spending recorded.</p>'}</div></div>`;
   for (const id of ['spending-overview', 'spending-expenses','report-limits']) {
-    document.getElementById(id).innerHTML = content;
+    document.getElementById(id).innerHTML = content + (id === 'spending-overview' ? spendingComparison(pid,categories,total) : '');
   }
 }
 
@@ -4585,7 +4791,61 @@ function openIncMod(pid, id) { document.getElementById('imo-pid').value = pid; d
 function saveIncMod() { const pid = document.getElementById('imo-pid').value, id = document.getElementById('imo-srcid').value; if(!S.incomeMods[pid]) S.incomeMods[pid]={}; S.incomeMods[pid][id] = parseFloat(document.getElementById('imo-amt').value); save(); closeOverlay('inc-mod-ov'); renderAll(); }
 function resetIncMod() { delete S.incomeMods[document.getElementById('imo-pid').value][document.getElementById('imo-srcid').value]; save(); closeOverlay('inc-mod-ov'); renderAll(); }
 function toggleRecvd(p, i) { if(!S.incomeReceived[p]) S.incomeReceived[p]={}; S.incomeReceived[p][i] = !S.incomeReceived[p][i]; save(); renderAll(); }
-function delExp(p, i) { S.expenses[p].splice(i,1); save(); renderAll(); }
+let pendingBudgetUndo;
+function offerBudgetUndo(message, revert) {
+  pendingBudgetUndo = revert;
+  document.getElementById('budget-undo-message').textContent = message;
+  document.getElementById('budget-undo').hidden = false;
+}
+function dismissBudgetUndo() {
+  pendingBudgetUndo = null;
+  document.getElementById('budget-undo').hidden = true;
+}
+function undoBudgetChange() {
+  const revert = pendingBudgetUndo;
+  dismissBudgetUndo();
+  if (!revert) return;
+  if (revert()) {
+    save(); renderAll();
+    if (S.activeTab === 'dashboard') renderDashboard();
+    document.getElementById('app-status').textContent = 'Change undone.';
+  } else {
+    document.getElementById('app-status').textContent = 'This entry has changed since the last action.';
+  }
+}
+function delExp(p, i) {
+  const entries = S.expenses[p];
+  if (!entries?.[i]) return;
+  const [removed] = entries.splice(i,1);
+  offerBudgetUndo('Expense deleted.', () => {
+    (S.expenses[p] ||= []).splice(Math.min(i,S.expenses[p].length),0,removed);
+    return true;
+  });
+  save(); renderAll();
+}
+function trackBillPayment(pid,bill) {
+  const previous = {paidAmt:bill.paidAmt,status:bill.status};
+  return () => {
+    const {paidAmt,status} = bill;
+    offerBudgetUndo('Payment updated.', () => {
+      if (!S.bills[pid]?.includes(bill) || bill.paidAmt !== paidAmt || bill.status !== status) return false;
+      Object.assign(bill,previous);
+      return true;
+    });
+  };
+}
+function trackInstallmentPayment(line,inst,pid) {
+  const previous = inst.paidPeriods?.[pid];
+  return () => {
+    const current = inst.paidPeriods?.[pid];
+    offerBudgetUndo('Payment updated.', () => {
+      if (!S.creditLines.includes(line) || !line.installments.includes(inst) || inst.paidPeriods?.[pid] !== current) return false;
+      if (previous === undefined) delete inst.paidPeriods[pid];
+      else inst.paidPeriods[pid] = previous;
+      return true;
+    });
+  };
+}
 
 function updAlloc(p, g, v) { 
   if(!S.savings[p]) S.savings[p]={}; 
@@ -4669,6 +4929,7 @@ function openExpModal(index) {
   document.getElementById('e-amt').value = expense?.amount ?? '';
   document.getElementById('expense-title').textContent = expense ? 'Edit expense' : 'Log expense';
   document.getElementById('expense-submit').textContent = expense ? 'Save changes' : 'Log expense';
+  document.getElementById('expense-cancel').textContent = expense ? 'Cancel' : 'Discard preview';
   document.getElementById('expense-period').textContent = getPDef(expensePeriodId).label + ' pay period';
   document.getElementById('expense-error').textContent = '';
   document.getElementById('app-status').textContent = '';
@@ -4835,6 +5096,7 @@ function submitBillPay(isFull) {
     const inst = cl.installments.find(i => i.id === iid);
     if (!inst.paidPeriods) inst.paidPeriods = {};
     
+    const undo = trackInstallmentPayment(cl,inst,pid);
     const dueAmount = installmentAmount(inst, pid);
     const prevPaid = installmentPaid(inst, pid);
     
@@ -4851,6 +5113,7 @@ function submitBillPay(isFull) {
         inst.paidPeriods[pid] = newPaid;
       }
     }
+    undo();
     save(); closeOverlay('bp-ov'); renderAll();
     return;
   }
@@ -4859,7 +5122,7 @@ function submitBillPay(isFull) {
   const idx = document.getElementById('bp-idx').value;
   const b = S.bills[pid][idx];
   if (b.extraPayment) return;
-  
+  const undo = trackBillPayment(pid,b);
   if (isFull) {
     b.paidAmt = b.amount;
     b.status = 'PAID';
@@ -4875,14 +5138,17 @@ function submitBillPay(isFull) {
       b.status = 'PENDING';
     }
   }
+  undo();
   save(); closeOverlay('bp-ov'); renderAll();
 }
 
 function unpayBill(pid, idx) {
   const b = S.bills[pid][idx];
   if (b.extraPayment || (b.extraApplied && !b.paidAmt)) return;
+  const undo = trackBillPayment(pid,b);
   b.paidAmt = 0;
   b.status = 'PENDING';
+  undo();
   save(); renderAll();
 }
 
@@ -4892,7 +5158,9 @@ function toggleCCInstPaid(cid, iid, pid) {
   const inst = cl.installments.find(i => i.id === iid);
   if (!inst) return;
   if (!inst.paidPeriods) inst.paidPeriods = {};
+  const undo = trackInstallmentPayment(cl,inst,pid);
   inst.paidPeriods[pid] = !inst.paidPeriods[pid];
+  undo();
   if(inst.paidPeriods[pid]) fireConfetti();
   save(); renderAll();
 }
@@ -4900,11 +5168,26 @@ function toggleCCInstPaid(cid, iid, pid) {
 function unpayCC(cid, iid, pid) {
   const cl = S.creditLines.find(c => c.id === cid);
   const inst = cl.installments.find(i => i.id === iid);
-  if(inst.paidPeriods) inst.paidPeriods[pid] = 0;
+  if (inst.paidPeriods) {
+    const undo = trackInstallmentPayment(cl,inst,pid);
+    inst.paidPeriods[pid] = 0;
+    undo();
+  }
   save(); renderAll();
 }
 
-function delBill(p, i) { if (S.bills[p][i].extraPayment) return; S.bills[p].splice(i,1); save(); renderAll(); }
+function delBill(p, i) {
+  const entries = S.bills[p];
+  if (!entries?.[i] || entries[i].extraPayment) return;
+  const [removed] = entries.splice(i,1);
+  offerBudgetUndo('Bill deleted.', () => {
+    const bills = S.bills[p] ||= [];
+    if (removed.seriesId && bills.some(bill => bill.seriesId === removed.seriesId)) return false;
+    bills.splice(Math.min(i,bills.length),0,removed);
+    return true;
+  });
+  save(); renderAll();
+}
 
 // ── GLOBAL BILLS OVERVIEW & EDIT ─────────────────────────────────
 let manageDebt = false;
