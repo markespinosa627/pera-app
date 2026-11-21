@@ -1319,6 +1319,81 @@ body[data-banknote="1000"] .ring-control::after {
   background:radial-gradient(circle at 35% 28%,white 12%,#d9eff9 45%,#8fbad0 82%);
   border:1px solid #a5c9d8;
 }
+/* Frameless glass surfaces use the current banknote tint. */
+:root {
+  --frost:color-mix(in srgb,var(--card) 76%,transparent);
+  --frost-nav:color-mix(in srgb,var(--glass-strong) 86%,transparent);
+  --frost-shadow:0 8px 28px #122e4e1c;
+  --frost-lift:0 14px 32px #122e4e30;
+}
+body.dark {
+  --frost-shadow:0 9px 26px #020b184f;
+  --frost-lift:0 14px 32px #020b186e;
+}
+:is(.crd,.ov-card,.ds-card,.modal,.period-nav,.payday-group,.spending-row,.row-item,.bill-row,.exp-row,.goal-row,.cc-card),
+#home-shortcuts,#ov-income-preview,#home-upcoming {
+  border:0;box-shadow:var(--frost-shadow);background:var(--frost);
+  backdrop-filter:blur(18px) saturate(145%);-webkit-backdrop-filter:blur(18px) saturate(145%);
+}
+#ov-income-preview .crd {background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+#payday-planner {border:0;box-shadow:var(--frost-shadow)}
+#payday-planner::after {display:none}
+.ring-control,.forecast svg {border:0}
+.nav-drawer,.mobile-nav {
+  border:0;background:var(--frost-nav);box-shadow:var(--frost-shadow);
+  backdrop-filter:blur(24px) saturate(155%);-webkit-backdrop-filter:blur(24px) saturate(155%);
+}
+.payday-group.is-selected {box-shadow:var(--frost-shadow)}
+.payday-group h3 {border:0}
+.payday-group.is-selected h3 {background:linear-gradient(120deg,var(--payday-header-dark),var(--payday-header))}
+.timeline-row {border-bottom:0}
+.timeline-row+.timeline-row {margin-top:2px}
+:is(.settings-btn,.p-arrow,.metric-glyph,#home-shortcuts button,#home-shortcuts b,.mini-chips button,.field-input,.field-select) {border:0}
+:is(.drawer-link,.mobile-nav button)[aria-current="page"] {border-color:transparent}
+#pane-overview #ov-income-preview,#pane-overview #spending-overview {grid-column:1/-1}
+#pane-overview .ov-card {display:grid;grid-template-rows:auto auto auto 30px;align-content:start;gap:4px}
+#pane-overview .ov-card-label {min-width:0;margin:0}
+#pane-overview .ov-card-sub {margin:0}
+#pane-overview .ov-card .sparkline {
+  position:static;width:100%;height:30px;opacity:1;display:block;
+}
+body.privacy-mode .sparkline {filter:blur(7px);user-select:none}
+.spending-body {display:grid;gap:16px;align-items:start}
+.spending-graphic {display:grid;justify-items:center;align-self:center;gap:9px;padding:8px}
+.spending-graphic strong {font-size:18px}
+.spending-pie {width:min(100%,205px);aspect-ratio:1;border-radius:50%;box-shadow:var(--frost-shadow);transition:scale .24s ease}
+.spending-rows {min-width:0}
+@media(min-width:680px) {
+  .spending-body.has-pie {grid-template-columns:minmax(145px,230px) minmax(0,1fr)}
+}
+:is(button,.crd,.ds-card,.payday-group,.spending-row,.row-item,.exp-row,.bill-row,.goal-row,.cc-card,summary) {
+  transition:translate .22s ease,scale .22s ease,background-color .22s ease,box-shadow .22s ease;
+}
+@media(hover:hover) and (pointer:fine) {
+  :is(.crd,.ds-card,.payday-group,.spending-row,.row-item,.exp-row,.bill-row,.goal-row,.cc-card):hover,
+  #home-shortcuts:hover,#ov-income-preview:hover,#home-upcoming:hover,#payday-planner:hover {
+    translate:0 -2px;box-shadow:var(--frost-lift);
+  }
+  #ov-income-preview .crd:hover {translate:none;box-shadow:none}
+  button:not(:disabled):hover,summary:hover {translate:0 -2px}
+  button:not(:disabled):hover {box-shadow:var(--frost-lift)}
+  .spending-pie:hover {scale:1.035}
+}
+button:not(:disabled):active,summary:active {scale:.97}
+@media(prefers-reduced-motion:no-preference) {
+  .tab-pane.active > :is(.crd,.feature-card,.ov-grid,#home-shortcuts,#ov-income-preview) {animation:glass-enter .34s ease-out backwards}
+  .tab-pane.active > :nth-child(2) {animation-delay:35ms}
+  .tab-pane.active > :nth-child(3) {animation-delay:65ms}
+  @keyframes glass-enter {from {opacity:0;translate:0 7px} to {opacity:1;translate:0 0}}
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {translate:none!important;scale:none!important}
+}
+@media(prefers-reduced-transparency:reduce) {
+  :root,body.dark {--frost:var(--card);--frost-nav:var(--card)}
+  :is(.crd,.ov-card,.ds-card,.modal,.period-nav,.payday-group,.spending-row,.row-item,.bill-row,.exp-row,.goal-row,.cc-card,.nav-drawer,.mobile-nav),
+  #home-shortcuts,#ov-income-preview,#home-upcoming {backdrop-filter:none;-webkit-backdrop-filter:none}
+}
 </style>
 </head>
 <body>
@@ -1399,25 +1474,6 @@ body[data-banknote="1000"] .ring-control::after {
   <!-- OVERVIEW TAB -->
   <div class="tab-pane active" id="pane-overview">
     <div class="crd feature-card" id="payday-planner"></div>
-  <details class="overview-lead home-details" id="overview-lead"><summary>Pay-period breakdown</summary>
-  <div class="hero" id="hero-card">
-    <div class="hero-greeting" id="hero-greeting">Pay period balance</div>
-    <div class="hero-label">Available to save</div>
-    <div class="hero-amount num" id="hero-amount" data-val="0">₱0</div>
-    <div class="hero-stats">
-      <div class="hs"><div class="hs-label">Income</div><div class="hs-val num g" id="h-income" data-val="0">₱0</div></div>
-      <div class="hs"><div class="hs-label">Bills</div><div class="hs-val num r" id="h-bills" data-val="0">₱0</div></div>
-      <div class="hs"><div class="hs-label">Expenses</div><div class="hs-val num y" id="h-exp" data-val="0">₱0</div></div>
-      <div class="hs"><div class="hs-label">Debt</div><div class="hs-val num p" id="h-credit" data-val="0">₱0</div></div>
-      <div class="hs"><div class="hs-label">Allocated</div><div class="hs-val num t" id="h-alloc" data-val="0">₱0</div></div>
-      <div class="hs"><div class="hs-label">Unallocated</div><div class="hs-val num" id="h-unalloc" data-val="0">₱0</div></div>
-    </div>
-    <div class="prog-wrap">
-      <div class="prog-meta"><span id="prog-lbl">100% settled</span><span id="prog-pct" class="num">₱0 / ₱0</span></div>
-      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width: 100%;"></div></div>
-    </div>
-  </div>
-  </details>
     <div id="home-shortcuts" aria-label="Quick actions">
       <button onclick="openExpModal()"><b aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 1 0 10 10"></path><path d="M12 6v6l4 2"></path><path d="M19 3v4h4"></path></svg></b>Expense</button>
       <button onclick="openDebtModal()"><b aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="13" y2="17"></line></svg></b>Bill</button>
@@ -2256,18 +2312,20 @@ function fireConfetti() {
 }
 
 // Sparklines Helper
-function genSparkline(dataPoints, color) {
-  if(!dataPoints || dataPoints.length < 2) return '';
-  const max = Math.max(...dataPoints, 1);
-  const min = Math.min(...dataPoints, 0);
-  const range = max - min;
-  const pts = dataPoints.map((v, i) => {
-    const x = (i / (dataPoints.length - 1)) * 100;
-    const y = 100 - (((v - min) / (range || 1)) * 80 + 10); // leave 10% padding top/bottom
-    return `${x},${y}`;
-  }).join(' ');
-  return `<svg class="sparkline" viewBox="0 0 100 100" preserveAspectRatio="none">
-    <polyline fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" points="${pts}"></polyline>
+function genSparkline(values, color) {
+  if (values.length < 2 || !values.some(Boolean)) return '<span aria-hidden="true"></span>';
+  const min = Math.min(...values);
+  const range = Math.max(...values) - min;
+  const points = values.map((amount,index) => [
+    4 + index * 112 / (values.length - 1),
+    range ? 24 - (amount - min) * 18 / range : 15
+  ]);
+  const path = points.map(([x,y],index) => `${index ? 'L' : 'M'}${x},${y}`).join(' ');
+  const [x,y] = points.at(-1);
+  return `<svg class="sparkline" viewBox="0 0 120 30" preserveAspectRatio="none" aria-hidden="true">
+    <path d="${path} L${x},29 L4,29 Z" fill="${color}" opacity=".16"/>
+    <path d="${path}" fill="none" stroke="${color}" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+    <circle cx="${x}" cy="${y}" r="2.5" fill="${color}"/>
   </svg>`;
 }
 
@@ -2460,7 +2518,6 @@ function goTab(tab) {
   S.activeTab = t;
   if (changed) window.scrollTo?.({top: 0, behavior: 'instant'});
   document.getElementById('workspace-title').textContent = pageTitles[t];
-  document.getElementById('overview-lead').hidden = t !== 'overview';
   document.getElementById('period-nav').hidden = ['calendar', 'more', 'about', 'support'].includes(t);
   document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.toggle('active', pane.id === 'pane-' + t));
   document.querySelectorAll('.drawer-link[id^="link-"]').forEach(link => {
@@ -3913,32 +3970,7 @@ function renderAll() {
   const bills = getBillsTotal(pid) - getBillsTotalByCat(pid, 'debt'), exp = getExpTotal(pid), credit = getCCDue(pid);
   const avail = getAvail(pid), alloc = getAlloc(pid);
   
-  const isOver = avail < 0;
-  const heroEl = document.getElementById('hero-card');
-  if (heroEl) heroEl.classList.toggle('over-budget', isOver);
-  
-  document.getElementById('hero-greeting').textContent = S.userName ? `Hello, ${S.userName}` : 'Pay period balance';
-  document.querySelector('#hero-card .hero-label').textContent = avail < 0 ? 'Budget shortfall' : 'Available to save';
-  animateNum('hero-amount', avail, true);
   try {
-    animateNum('h-income', income, true);
-    animateNum('h-bills', bills, true);
-    animateNum('h-exp', exp, true);
-    animateNum('h-credit', debt, true);
-    animateNum('h-alloc', alloc, true);
-    animateNum('h-unalloc', avail-alloc, true);
-  } catch(e) {}
-  
-  const totalDue = bills + debt;
-  const totalPaid = getBillsPaid(pid) + getCCPaid(pid);
-  const pct = totalDue > 0 ? Math.round((totalPaid/totalDue)*100) : 0;
-  const fillCls = pct >= 70 ? '' : pct >= 30 ? 'm' : 'l';
-
-  try {
-    document.getElementById('prog-fill').style.width = Math.max(0, Math.min(100, pct)) + '%';
-    document.getElementById('prog-fill').className = 'prog-fill ' + fillCls;
-    document.getElementById('prog-pct').textContent = `${fPHP0(totalPaid)} / ${fPHP0(totalDue)}`;
-    document.getElementById('prog-lbl').textContent = totalDue > 0 ? `${pct}% of bills and debt settled` : 'No bills or debt due';
     document.getElementById('p-label').innerHTML = `${pdef.label} <span style="font-size:14px; opacity:0.5; margin-left:2px;">▾</span>`;
     
     // Update navigation buttons dynamically
@@ -3972,15 +4004,19 @@ function renderOverview(pid, pIdx, income, bills, exp, debt, avail, alloc) {
   const roll = rolloverMemo[pid] || 0;
   const expectedInc = getIncomePHP(pid);
   
-  const incTrend = genSparkline(getTrendData(pIdx, 6, id => getReceivedIncomePHP(id)), 'var(--green)');
-  const expTrend = genSparkline(getTrendData(pIdx, 6, id => getExpTotal(id)), 'var(--gold)');
+  const trend = (getter, role) => genSparkline(getTrendData(pIdx, 6, getter), `var(--ring-${role})`);
+  const incTrend = trend(id => getReceivedIncomePHP(id) + (rolloverMemo[id] || 0), 'income');
+  const expTrend = trend(getExpTotal, 'expense');
+  const billTrend = trend(id => getBillsTotal(id) - getBillsTotalByCat(id,'debt'), 'bills');
+  const debtTrend = trend(id => getBillsTotalByCat(id,'debt') + getCCDue(id), 'debt');
+  const savingsTrend = trend(getAlloc, 'savings');
 
   document.getElementById('ov-grid').innerHTML = `
-    <button type="button" class="ov-card" onclick="goTab('income')"><div class="ov-card-label">Income received<span class="metric-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span></div><div class="ov-card-val num g">${fPHP0(income)} <span style="font-size:11px;color:var(--ink3);font-weight:600;font-family:'Geist',sans-serif">/ ${fPHP0(expectedInc + roll)}</span></div><div class="ov-card-sub">${srcs.length} sources</div>${incTrend}</button>
-    <button type="button" class="ov-card" onclick="goTab('bills')"><div class="ov-card-label">Bills<span class="metric-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="13" y2="17"></line></svg></span></div><div class="ov-card-val num r">${fPHP0(bills)}</div><div class="ov-card-sub">${(S.bills[pid]||[]).filter(b=>b.category !== 'debt' && b.status !== 'PAID').length} unpaid</div></button>
+    <button type="button" class="ov-card" onclick="goTab('income')"><div class="ov-card-label">Received income<span class="metric-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span></div><div class="ov-card-val num g">${fPHP0(income)} <span style="font-size:11px;color:var(--ink3);font-weight:600;font-family:'Geist',sans-serif">/ ${fPHP0(expectedInc + roll)}</span></div><div class="ov-card-sub">${srcs.length} sources</div>${incTrend}</button>
+    <button type="button" class="ov-card" onclick="goTab('bills')"><div class="ov-card-label">Bills<span class="metric-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="13" y2="17"></line></svg></span></div><div class="ov-card-val num r">${fPHP0(bills)}</div><div class="ov-card-sub">${(S.bills[pid]||[]).filter(b=>b.category !== 'debt' && b.status !== 'PAID').length} unpaid</div>${billTrend}</button>
     <button type="button" class="ov-card" onclick="goTab('expenses')"><div class="ov-card-label">Expenses<span class="metric-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 1 0 10 10"></path><path d="M12 6v6l4 2"></path><path d="M19 3v4h4"></path></svg></span></div><div class="ov-card-val num y">${fPHP0(exp)}</div><div class="ov-card-sub">${(S.expenses[pid]||[]).length} logged</div>${expTrend}</button>
-    <button type="button" class="ov-card" onclick="goTab('credit')"><div class="ov-card-label">Debt due<span class="metric-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="3"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></span></div><div class="ov-card-val num p">${fPHP0(debt)}</div><div class="ov-card-sub">Scheduled</div></button>
-    <button type="button" class="ov-card" onclick="goTab('savings')"><div class="ov-card-label">Savings allocated<span class="metric-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></span></div><div class="ov-card-val num g">${fPHP0(alloc)}</div><div class="ov-card-sub">${fPHP0(avail-alloc)} unalloc.</div></button>
+    <button type="button" class="ov-card" onclick="goTab('credit')"><div class="ov-card-label">Debt due<span class="metric-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="3"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></span></div><div class="ov-card-val num p">${fPHP0(debt)}</div><div class="ov-card-sub">Scheduled</div>${debtTrend}</button>
+    <button type="button" class="ov-card" onclick="goTab('savings')"><div class="ov-card-label">Savings allocated<span class="metric-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></span></div><div class="ov-card-val num g">${fPHP0(alloc)}</div><div class="ov-card-sub">${fPHP0(avail-alloc)} unalloc.</div>${savingsTrend}</button>
   `;
 
   const recvd = srcs.filter(s => S.incomeReceived[pid]?.[s.id]);
@@ -4321,7 +4357,7 @@ function renderSpending(pid) {
   const categories = getSpendingBreakdown(pid);
   const total = categories.reduce((sum, category) => sum + category.amount, 0);
   const rows = categories.map(({name, color, amount, limit}) => {
-    const used = limit ? Math.round(amount / limit * 100) : Math.round(amount / total * 100) || 0;
+    const used = limit ? Math.round(amount / limit * 100) : total > 0 ? Math.round(amount / total * 100) : 0;
     const over = limit > 0 && amount > limit;
     const message = limit ? `${fPHP(Math.abs(limit - amount))} ${over ? 'over limit' : 'left'}` : `${used}% of spending`;
     return `<div class="spending-row ${over ? 'is-over' : ''}">
@@ -4330,14 +4366,23 @@ function renderSpending(pid) {
       <div class="spending-caption spending-private">${message}</div>
     </div>`;
   }).join('');
-  const mix = total > 0 ? `<div class="spending-mix spending-private" aria-hidden="true">${categories
-    .filter(category => category.amount > 0)
-    .map(category => `<i style="flex:${category.amount};background:${category.color}"></i>`).join('')}</div>` : '';
+  const positive = categories.filter(category => category.amount > 0);
+  const gross = positive.reduce((sum,category) => sum + category.amount, 0);
+  let angle = 0;
+  const slices = positive.map(({amount,color}, index) => {
+    const start = angle;
+    angle = index === positive.length - 1 ? 360 : angle + 360 * amount / gross;
+    return `${color} ${start}deg ${angle}deg`;
+  });
+  const pie = slices.length ? `<div class="spending-graphic spending-private">
+    <div class="spending-pie" aria-hidden="true" style="background:conic-gradient(${slices.join(',')})"></div>
+    <strong class="num">${fPHP(gross)}</strong><small>Spending total</small>
+  </div>` : '';
   const content = `<div class="spending-head">
       <div><h2>Spending by category</h2><p>${getPDef(pid).label} pay period</p></div>
       <button type="button" class="settings-btn" onclick="openSpendingLimits()">Edit limits</button>
     </div>
-    ${mix}<div class="spending-rows">${rows || '<p class="spending-caption">No spending recorded.</p>'}</div>`;
+    <div class="spending-body ${pie ? 'has-pie' : ''}">${pie}<div class="spending-rows">${rows || '<p class="spending-caption">No spending recorded.</p>'}</div></div>`;
   for (const id of ['spending-overview', 'spending-expenses','report-limits']) {
     document.getElementById(id).innerHTML = content;
   }
